@@ -9,5 +9,4 @@ public class CacheingtestApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(CacheingtestApplication.class, args);
 	}
-
 }

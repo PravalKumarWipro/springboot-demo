@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 
 @Service
-public class RedisClient implements GenericCacheClient{
+public class RedisClient implements GenericCacheClient {
 
     @Autowired
     RedissonClient redissonClient;
@@ -39,5 +39,10 @@ public class RedisClient implements GenericCacheClient{
         RMapCache<String, String> userCache = redissonClient.getMapCache(CACHE_NAME);
         System.out.println("REDIS >>> added user with userId :: " + userId);
         userCache.put(String.valueOf(userId), userName, 60, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public String toString() {
+        return "RedisClient";
     }
 }

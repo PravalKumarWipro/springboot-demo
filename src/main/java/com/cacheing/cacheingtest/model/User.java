@@ -5,38 +5,38 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class User {
-    private Integer userId;
-    private String userName;
+    private Integer key;
+    private String value;
 
     public User() {
     }
 
-    public User(Integer userId, String userName) {
-        this.userId = userId;
-        this.userName = userName;
+    public User(Integer key, String value) {
+        this.key = key;
+        this.value = value;
     }
 
-    public int getUserId() {
-        return userId;
+    public int getKey() {
+        return key;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setKey(int key) {
+        this.key = key;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getValue() {
+        return value;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setValue(String value) {
+        this.value = value;
     }
 
     @Override
     public String toString() {
         return "User{" +
-                "userId='" + userId + '\'' +
-                ", userName='" + userName + '\'' +
+                "userId='" + key + '\'' +
+                ", userName='" + value + '\'' +
                 '}';
     }
 }

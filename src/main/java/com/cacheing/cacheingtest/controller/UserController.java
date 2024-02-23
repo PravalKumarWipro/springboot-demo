@@ -1,39 +1,40 @@
 package com.cacheing.cacheingtest.controller;
 
+import com.cacheing.cacheingtest.dao.UserDao;
 import com.cacheing.cacheingtest.model.User;
 import com.cacheing.cacheingtest.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Value;
-import com.cacheing.cacheingtest.AppConstants;
 
 @RestController
 public class UserController {
-	@Value("${cache.client:APACHE_IGNITE}")
-    String cacheClient;
 
     @Autowired
     public UserServiceImpl userServiceImpl;
 
+    @Autowired
+    private UserDao userDao;
+
     @GetMapping("/user/test")
     public String hello() {
-        return "Hello From SpringBoot!!! Cache Client we are using  :: "+cacheClient;
+        return "Hello From SpringBoot!!! Cache Client we are using  :: "+userDao.getClient();
     }
 
 
-    @GetMapping("/user/{userId}")
-    public String getBooks(@PathVariable("userId") int userId) {
-        return userServiceImpl.getUserById(userId);
+    @GetMapping("/user/{key}")
+    public String getBooks(@PathVariable("key") int key) {
+        return userServiceImpl.getUserById(key);
     }
 
-    @DeleteMapping("/{userId}")
-    public void deleteBook(@PathVariable("userId") int userId) {
-        userServiceImpl.delete(userId);
+    @DeleteMapping("/{key}")
+    public void deleteBook(@PathVariable("key") int key) {
+        userServiceImpl.delete(key);
     }
 
     @PostMapping("/user/")
     public String addUser(@RequestBody User user) {
-        userServiceImpl.saveOrUpdate(user.getUserId(), user.getUserName());
-        return "User with userId " + user.getUserId() + " Added";
+        userServiceImpl.saveOrUpdate(user.getKey(), user.getValue());
+        return "User with key " + user.getKey() + " Added";
     }
 }

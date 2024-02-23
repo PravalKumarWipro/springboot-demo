@@ -4,19 +4,24 @@ import com.cacheing.cacheingtest.AppConstants;
 import com.cacheing.cacheingtest.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserDao {
 
-    @Value("${cache.client:APACHE_IGNITE}")
-    String cacheClient;
+    @Autowired
+    private ApacheIgniteClient apacheIgniteClient;
 
     @Autowired
-    ApacheIgniteClient apacheIgniteClient;
+    private RedisClient redisClient;
 
     @Autowired
-    RedisClient redisClient;
+    private UnleashCustomClient unleashCustomClient;
 
 
     public String getUserById(int userId) throws UserNotFoundException {
@@ -33,11 +38,8 @@ public class UserDao {
 
     public GenericCacheClient getClient() {
         GenericCacheClient genericCacheClient = apacheIgniteClient;
-        switch (cacheClient) {
-            case AppConstants.CACHE_REDIS: {
-                genericCacheClient = redisClient;
-                break;
-            }
+        if (unleashCustomClient.isRedisEnabled()) {
+            genericCacheClient = redisClient;
         }
         return genericCacheClient;
     }

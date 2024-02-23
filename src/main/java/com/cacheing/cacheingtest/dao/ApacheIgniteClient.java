@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ApacheIgniteClient implements GenericCacheClient{
+public class ApacheIgniteClient implements GenericCacheClient {
 
     @Autowired
     IgniteClient igniteClient;
@@ -32,5 +32,10 @@ public class ApacheIgniteClient implements GenericCacheClient{
         ClientCache<Integer, String> clientCache = igniteClient.getOrCreateCache(CACHE_NAME);
         System.out.println("APACHE IGNITE >>> added user with userId :: " + userId);
         clientCache.put(userId, userName);
+    }
+
+    @Override
+    public String toString() {
+        return "ApacheIgniteClient";
     }
 }

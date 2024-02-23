@@ -17,7 +17,7 @@ public class UserController {
 
     @GetMapping("/user/test")
     public String hello() {
-        return "Hello From SpringBoot!!! Cache Client we are using  :: "+cacheClient;
+        return "Hello From SpringBoot!!! Cache Client we are using =>  "+cacheClient;
     }
 
 

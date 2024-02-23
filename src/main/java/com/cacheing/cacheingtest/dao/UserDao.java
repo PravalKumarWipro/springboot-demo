@@ -24,21 +24,21 @@ public class UserDao {
     private UnleashCustomClient unleashCustomClient;
 
 
-    public String getUserById(int userId) throws UserNotFoundException {
-        return getClient().getUserById(userId);
+    public String getUserById(int userId,String token) throws UserNotFoundException {
+        return getClient(token).getUserById(userId);
     }
 
-    public Boolean delete(int userId) {
-        return getClient().delete(userId);
+    public Boolean delete(int userId,String token) {
+        return getClient(token).delete(userId);
     }
 
-    public void saveOrUpdate(int userId, String userName) {
-        getClient().saveOrUpdate(userId, userName);
+    public void saveOrUpdate(int userId, String userName,String token) {
+        getClient(token).saveOrUpdate(userId, userName);
     }
 
-    public GenericCacheClient getClient() {
+    public GenericCacheClient getClient(String token) {
         GenericCacheClient genericCacheClient = apacheIgniteClient;
-        if (unleashCustomClient.isRedisEnabled()) {
+        if (unleashCustomClient.isRedisEnabled(token)) {
             genericCacheClient = redisClient;
         }
         return genericCacheClient;

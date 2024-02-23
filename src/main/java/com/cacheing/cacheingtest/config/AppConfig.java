@@ -7,19 +7,22 @@ import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
+
+import java.time.Duration;
 
 
 @Configuration
 public class AppConfig {
 
 
-    @Value("${ignite.url:127.0.0.1:10800}")
+    @Value("${ignite.url}")
     String apacheIgniteUrl;
 
-    @Value("${redis.url:redis://127.0.0.1:6379}")
+    @Value("${redis.url}")
     String redisBaseUrl;
 
     @Value("${cacheDuration:300}")
@@ -27,7 +30,7 @@ public class AppConfig {
 
     String CACHE_NAME = "Users";
 
-   @Bean
+    @Bean
     public IgniteClient igniteClient() {
         ClientConfiguration cfg = new ClientConfiguration().setAddresses(apacheIgniteUrl);
         IgniteClient client = Ignition.startClient(cfg);
@@ -46,6 +49,6 @@ public class AppConfig {
 
     @Bean
     public RestTemplate restTemplate() {
-        return new RestTemplate();
+        return new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(3)).setReadTimeout(Duration.ofSeconds(3)).build();
     }
 }

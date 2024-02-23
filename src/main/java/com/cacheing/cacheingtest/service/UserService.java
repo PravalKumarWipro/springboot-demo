@@ -5,9 +5,9 @@ import com.cacheing.cacheingtest.exception.UserNotFoundException;
 
 public interface UserService {
 
-    String getUserById(int userId) throws UserNotFoundException;
+    String getUserById(int userId,String token) throws UserNotFoundException;
 
-    void delete(int userId) throws UserNotFoundException;
+    void delete(int userId,String token) throws UserNotFoundException;
 
-    void saveOrUpdate(int userId, String userName) throws UserAlreadyExistsException;
+    void saveOrUpdate(int userId, String userName,String token) throws UserAlreadyExistsException;
 }

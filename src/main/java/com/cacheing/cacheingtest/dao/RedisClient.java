@@ -38,7 +38,7 @@ public class RedisClient implements GenericCacheClient {
     public void saveOrUpdate(int userId, String userName) {
         RMapCache<String, String> userCache = redissonClient.getMapCache(CACHE_NAME);
         System.out.println("REDIS >>> added user with userId :: " + userId);
-        userCache.put(String.valueOf(userId), userName, 60, TimeUnit.SECONDS);
+        userCache.put(String.valueOf(userId), userName);
     }
 
     @Override

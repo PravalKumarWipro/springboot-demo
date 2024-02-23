@@ -12,11 +12,11 @@ import java.util.Map;
 @Component
 public class UnleashCustomClient {
 
-    @Value("${unleashurl:http://localhost:4242}")
+    @Value("${unleashurl}")
     private String unleashUrl;
 
     @Value("${token:user:dd1b86a3d56e35c9a39dbfde2fa23e1ab8d0b66e506a271b1ea4df92}")
-    private String token;
+    private String defaultToken;
 
     @Value("${projectName:default}")
     private String projectName;
@@ -31,7 +31,7 @@ public class UnleashCustomClient {
     private RestTemplate restTemplate;
 
 
-    public Boolean isRedisEnabled() {
+    public Boolean isRedisEnabled(String token) {
         Boolean status = false;
         String url = unleashUrl + "/api/admin/projects/" + projectName + "/features/" + featureName;
         HttpHeaders headers = new HttpHeaders();

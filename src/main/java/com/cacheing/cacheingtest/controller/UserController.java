@@ -18,18 +18,18 @@ public class UserController {
     private UserDao userDao;
 
     @GetMapping("/user/test")
-    public String hello(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+    public String testApi(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         return "Hello From SpringBoot!!! Cache Client we are using  :: "+userDao.getClient(token);
     }
 
 
     @GetMapping("/user/{key}")
-    public String getBooks(@PathVariable("key") int key,@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+    public String getUser(@PathVariable("key") int key,@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         return userServiceImpl.getUserById(key,token);
     }
 
     @DeleteMapping("/{key}")
-    public void deleteBook(@PathVariable("key") int key,@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+    public void deleteUser(@PathVariable("key") int key,@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         userServiceImpl.delete(key,token);
     }
 

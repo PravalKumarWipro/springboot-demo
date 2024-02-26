@@ -38,14 +38,29 @@
             <artifactId>ignite-core</artifactId>
             <version>2.7.6</version>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/io.getunleash/unleash-client-java -->
         <dependency>
             <groupId>io.getunleash</groupId>
             <artifactId>unleash-client-java</artifactId>
             <version>9.2.0</version>
         </dependency>
-
-
+        <!-- swagger dependency -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+       <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-boot-starter</artifactId>
+            <version>3.0.0</version>
+       </dependency>
     </dependencies>
     <build>
         <finalName>springboot-cache</finalName>

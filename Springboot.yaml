@@ -15,12 +15,12 @@ spec:
     spec:
       containers:
       - name: bb-site
-        image: europe-west2-docker.pkg.dev/lbg-coe/hello-repo/springboot-cache-image:v1
+        image: europe-west2-docker.pkg.dev/lbg-coe/demo-repo/springboot-cache-image:v1
         env:
         - name: REDIS_URL
-          value: "redis://10.48.10.112:6379"
+          value: "redis://34.118.227.142:6379"
         - name: IGNITE_URL
-          value: "10.48.10.112:10800"
+          value: "34.118.227.142:10800"
         - name: CACHE_CLIENT
           value: "IGNITE"
         ports:

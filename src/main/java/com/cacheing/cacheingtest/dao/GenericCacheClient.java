@@ -1,9 +1,9 @@
 package com.cacheing.cacheingtest.dao;
 
 public interface GenericCacheClient {
-    String getUserById(int userId);
+    String getValueById(int key);
 
-    Boolean delete(int userId);
+    Boolean delete(int key);
 
-    void saveOrUpdate(int userId, String userName);
+    void saveOrUpdate(int key, String value);
 }

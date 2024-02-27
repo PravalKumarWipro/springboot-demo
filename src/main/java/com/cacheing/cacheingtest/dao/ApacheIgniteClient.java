@@ -14,24 +14,24 @@ public class ApacheIgniteClient implements GenericCacheClient {
     String CACHE_NAME = "Users";
 
 
-    public String getUserById(int userId) {
+    public String getValueById(int key) {
         ClientCache<Integer, String> clientCache = igniteClient.getOrCreateCache(CACHE_NAME);
-        String userName = clientCache.get(userId);
-        System.out.println("APACHE IGNITE >>> searching user with userId :: " + userId + ", response received from cache :: " + userName);
-        return userName;
+        String value = clientCache.get(key);
+        System.out.println("APACHE IGNITE >>> searching user with key :: " + key + ", response received from cache :: " + value);
+        return value;
     }
 
-    public Boolean delete(int userId) {
+    public Boolean delete(int key) {
         ClientCache<Integer, String> clientCache = igniteClient.getOrCreateCache(CACHE_NAME);
-        Boolean status = clientCache.remove(userId);
+        Boolean status = clientCache.remove(key);
         System.out.println("APACHE IGNITE >>> response after deletion :: " + status);
         return status;
     }
 
-    public void saveOrUpdate(int userId, String userName) {
+    public void saveOrUpdate(int key, String value) {
         ClientCache<Integer, String> clientCache = igniteClient.getOrCreateCache(CACHE_NAME);
-        System.out.println("APACHE IGNITE >>> added user with userId :: " + userId);
-        clientCache.put(userId, userName);
+        System.out.println("APACHE IGNITE >>> added user with key :: " + key);
+        clientCache.put(key, value);
     }
 
     @Override

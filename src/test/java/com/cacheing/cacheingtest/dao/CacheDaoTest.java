@@ -39,7 +39,7 @@ public class CacheDaoTest {
     @Test
     public void testGetUserById_ApacheIgnite() throws CacheNotFoundException {
         int key = 123;
-        String expectedUser = "John Doe";
+        String expectedUser = "Test";
         String token = "abc";
         when(unleashCustomClient.isRedisEnabled()).thenReturn(false);
         when(apacheIgniteClient.getValueById(key)).thenReturn(expectedUser);
@@ -52,7 +52,7 @@ public class CacheDaoTest {
     @Test
     public void testGetUserById_Redis() throws CacheNotFoundException {
         int key = 456;
-        String expectedUser = "Jane Smith";
+        String expectedUser = "Test";
         String token = "abc";
         when(unleashCustomClient.isRedisEnabled()).thenReturn(true);
 
@@ -90,11 +90,10 @@ public class CacheDaoTest {
     @Test
     public void testSaveOrUpdate_ApacheIgnite() {
         int key = 111;
-        String value = "Alice";
+        String value = "Test";
         String token = "abc";
         when(unleashCustomClient.isRedisEnabled()).thenReturn(false);
         cacheDao.saveOrUpdate(key, value);
-
         verify(apacheIgniteClient, times(1)).saveOrUpdate(key, value);
         verify(redisClient, never()).saveOrUpdate(key, value);
     }
@@ -102,12 +101,10 @@ public class CacheDaoTest {
     @Test
     public void testSaveOrUpdate_Redis() {
         int key = 222;
-        String value = "Bob";
-
+        String value = "Test";
         String token = "abc";
         when(unleashCustomClient.isRedisEnabled()).thenReturn(true);
         cacheDao.saveOrUpdate(key, value);
-
         verify(apacheIgniteClient, never()).saveOrUpdate(key, value);
         verify(redisClient, times(1)).saveOrUpdate(key, value);
     }

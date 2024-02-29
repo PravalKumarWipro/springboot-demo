@@ -5,8 +5,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.junit.Assert.assertEquals;
+
 @RunWith(MockitoJUnitRunner.class)
-public class CacheMapNotFoundExceptionTest {
+public class CacheNotFoundExceptionTest {
     @Test
     public void testDefaultConstructor() {
         CacheNotFoundException exception = new CacheNotFoundException();
@@ -34,5 +36,17 @@ public class CacheMapNotFoundExceptionTest {
         Throwable cause = new IllegalArgumentException("Invalid user name.");
         CacheNotFoundException exception = new CacheNotFoundException(cause);
         Assert.assertEquals(cause, exception.getCause());
+    }
+    @Test
+    public void testCacheNotFoundExceptionConstructor(){
+        String message = "Failed to retrieve user data.";
+        Throwable cause = new IllegalStateException("Database connection lost.");
+        boolean enableSuppression = false;
+        boolean writableStackTrace=false;
+        CacheNotFoundException exception=new CacheNotFoundException(message,cause,enableSuppression,writableStackTrace);
+        assertEquals(message, exception.getMessage());
+        assertEquals(cause, exception.getCause());
+        assertEquals(enableSuppression, exception.getSuppressed().length > 0);
+        assertEquals(writableStackTrace, exception.getStackTrace().length > 0);
     }
 }

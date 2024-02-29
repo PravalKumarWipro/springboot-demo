@@ -9,15 +9,15 @@ services:
     image: apacheignite/ignite
     ports:
       - 10800:10800
-  #cacheservice:
-  #  image: springboot-cache-image:latest
-  #  environment:
-  #    REDIS_URL: redis://redis:6379
-  #    IGNITE_URL: ignite:10800
-  #    CACHE_CLIENT: ${CACHE_VALUE}
-  #  ports:
-  #    - 7070:7070
-  #  depends_on:
-  #    - redis
-  #    - ignite
+  cacheservice:
+    image: springboot-cache-image:latest
+    environment:
+      REDIS_URL: redis://redis:6379
+      IGNITE_URL: ignite:10800
+      CACHE_CLIENT: ${CACHE_VALUE}
+    ports: 
+      - 7070:7070
+    depends_on:
+      - redis
+      - ignite
 

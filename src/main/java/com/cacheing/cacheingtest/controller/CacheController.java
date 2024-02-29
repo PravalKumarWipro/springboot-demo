@@ -2,7 +2,7 @@ package com.cacheing.cacheingtest.controller;
 
 import com.cacheing.cacheingtest.AppConstants;
 import com.cacheing.cacheingtest.dao.CacheDao;
-import com.cacheing.cacheingtest.dao.UnleashCustomClient;
+//import com.cacheing.cacheingtest.dao.UnleashCustomClient;
 import com.cacheing.cacheingtest.model.CacheMap;
 import com.cacheing.cacheingtest.model.Response;
 import com.cacheing.cacheingtest.service.CacheServiceImpl;
@@ -53,22 +53,22 @@ public class CacheController {
         return response;
     }
 
-    @PostMapping("/unleash/token/{token}")
-    public Response setUnleashToken(@PathVariable("token") String token) {
-        Response response = new Response(AppConstants.SUCCESS);
-        if (!StringUtils.isEmpty(token)) {
-            UnleashCustomClient.token = token;
-            response.setMessage("Token Updated");
-        } else {
-            response.setMessage("Invalid Token");
-        }
-        return response;
-    }
-
-    @GetMapping("/unleash/token")
-    public Response getUnleashToken() {
-        Response response = new Response(AppConstants.SUCCESS);
-        response.setMessage("token : " + UnleashCustomClient.token);
-        return response;
-    }
+//    @PostMapping("/unleash/token/{token}")
+//    public Response setUnleashToken(@PathVariable("token") String token) {
+//        Response response = new Response(AppConstants.SUCCESS);
+//        if (!StringUtils.isEmpty(token)) {
+//            UnleashCustomClient.token = token;
+//            response.setMessage("Token Updated");
+//        } else {
+//            response.setMessage("Invalid Token");
+//        }
+//        return response;
+//    }
+//
+//    @GetMapping("/unleash/token")
+//    public Response getUnleashToken() {
+//        Response response = new Response(AppConstants.SUCCESS);
+//        response.setMessage("token : " + UnleashCustomClient.token);
+//        return response;
+//    }
 }

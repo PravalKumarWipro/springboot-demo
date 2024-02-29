@@ -1,20 +1,24 @@
 package com.cacheing.cacheingtest.dao;
 
+import com.cacheing.cacheingtest.AppConstants;
 import com.cacheing.cacheingtest.exception.CacheNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CacheDao {
 
+    @Value("${cache.client:APACHE_IGNITE}")
+    String cacheClient;
     @Autowired
     private ApacheIgniteClient apacheIgniteClient;
 
     @Autowired
     private RedisClient redisClient;
 
-    @Autowired
-    private UnleashCustomClient unleashCustomClient;
+//    @Autowired
+//    private UnleashCustomClient unleashCustomClient;
 
 
     public String getUserById(int key) throws CacheNotFoundException {
@@ -31,8 +35,11 @@ public class CacheDao {
 
     public GenericCacheClient getClient() {
         GenericCacheClient genericCacheClient = apacheIgniteClient;
-        if (unleashCustomClient.isRedisEnabled()) {
-            genericCacheClient = redisClient;
+        switch (cacheClient) {
+            case AppConstants.CACHE_REDIS: {
+                genericCacheClient = redisClient;
+                break;
+            }
         }
         return genericCacheClient;
     }

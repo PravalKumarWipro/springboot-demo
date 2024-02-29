@@ -4,7 +4,7 @@ import com.cacheing.cacheingtest.AppConstants;
 import com.cacheing.cacheingtest.dao.ApacheIgniteClient;
 import com.cacheing.cacheingtest.dao.CacheDao;
 import com.cacheing.cacheingtest.dao.RedisClient;
-import com.cacheing.cacheingtest.dao.UnleashCustomClient;
+//import com.cacheing.cacheingtest.dao.UnleashCustomClient;
 import com.cacheing.cacheingtest.model.CacheMap;
 import com.cacheing.cacheingtest.model.Response;
 import com.cacheing.cacheingtest.service.CacheServiceImpl;
@@ -79,32 +79,32 @@ public class CacheControllerTest {
         assertEquals(expectedResponse.getStatus(), response.getStatus());
         assertEquals(expectedResponse.getMessage(), response.getMessage());
     }
-    @Test
-    public void testSetUnleashToken_Success() {
-        String token = "valid-token";
-        Response expectedResponse = new Response(AppConstants.SUCCESS);
-        expectedResponse.setMessage("Token Updated");
-        Response response = cacheController.setUnleashToken(token);
-        assertEquals(expectedResponse.getStatus(), response.getStatus());
-        assertEquals(expectedResponse.getMessage(), response.getMessage());
-    }
-    @Test
-    public void testSetUnleashToken_EmptyToken() {
-        String token = "";
-        Response expectedResponse = new Response(AppConstants.SUCCESS);
-        expectedResponse.setMessage("Invalid Token");
-        Response response = cacheController.setUnleashToken(token);
-        assertEquals(expectedResponse.getStatus(), response.getStatus());
-        assertEquals(expectedResponse.getMessage(), response.getMessage());
-    }
-    @Test
-    public void testGetUnleashToken() {
-        String token = "valid-token";
-        UnleashCustomClient.token = token;
-        Response expectedResponse = new Response(AppConstants.SUCCESS);
-        expectedResponse.setMessage("token : " + token);
-        Response response = cacheController.getUnleashToken();
-        assertEquals(expectedResponse.getStatus(), response.getStatus());
-        assertEquals(expectedResponse.getMessage(), response.getMessage());
-    }
+//    @Test
+//    public void testSetUnleashToken_Success() {
+//        String token = "valid-token";
+//        Response expectedResponse = new Response(AppConstants.SUCCESS);
+//        expectedResponse.setMessage("Token Updated");
+//        Response response = cacheController.setUnleashToken(token);
+//        assertEquals(expectedResponse.getStatus(), response.getStatus());
+//        assertEquals(expectedResponse.getMessage(), response.getMessage());
+//    }
+//    @Test
+//    public void testSetUnleashToken_EmptyToken() {
+//        String token = "";
+//        Response expectedResponse = new Response(AppConstants.SUCCESS);
+//        expectedResponse.setMessage("Invalid Token");
+//        Response response = cacheController.setUnleashToken(token);
+//        assertEquals(expectedResponse.getStatus(), response.getStatus());
+//        assertEquals(expectedResponse.getMessage(), response.getMessage());
+//    }
+//    @Test
+//    public void testGetUnleashToken() {
+//        String token = "valid-token";
+//        UnleashCustomClient.token = token;
+//        Response expectedResponse = new Response(AppConstants.SUCCESS);
+//        expectedResponse.setMessage("token : " + token);
+//        Response response = cacheController.getUnleashToken();
+//        assertEquals(expectedResponse.getStatus(), response.getStatus());
+//        assertEquals(expectedResponse.getMessage(), response.getMessage());
+//    }
 }

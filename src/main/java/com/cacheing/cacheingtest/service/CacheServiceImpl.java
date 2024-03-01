@@ -25,10 +25,15 @@ public class CacheServiceImpl implements CacheService {
 
     @Override
     public void delete(int key) throws CacheNotFoundException {
-        Boolean status = cacheDao.delete(key);
-        System.out.println("deleting key :: " + key + ", response received from cache :: " + status);
-        if (!status) {
-            throw new CacheNotFoundException("key " + key + " NotFound");
+        try {
+            Boolean status = cacheDao.delete(key);
+            System.out.println("deleting key :: " + key + ", response received from cache :: " + status);
+            if (!status) {
+                throw new CacheNotFoundException("key " + key + " NotFound");
+            }
+        } catch (CacheNotFoundException e) {
+            System.err.println("Cache not found: " + e.getMessage());
+            throw e;
         }
     }
 

@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -39,8 +40,11 @@ public class CacheServiceImplTest {
         int key = 123;
         when(cacheDao.delete(key)).thenReturn(true);
         boolean status = cacheDao.delete(key);
+        assertDoesNotThrow(()->userServiceImpl.delete(key));
         assertTrue(status);
     }
+
+
     @Test
     public void testDelete_Failure() {
         int key = 123;

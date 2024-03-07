@@ -39,12 +39,6 @@
             <version>2.7.6</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/io.getunleash/unleash-client-java -->
-        <dependency>
-            <groupId>io.getunleash</groupId>
-            <artifactId>unleash-client-java</artifactId>
-            <version>9.2.0</version>
-        </dependency>
         <!-- swagger dependency -->
         <dependency>
             <groupId>io.springfox</groupId>
@@ -103,7 +97,7 @@
                             <goal>repackage</goal>
                         </goals>
                         <configuration>
-                            <mainClass>com.cacheing.cacheingtest.CacheingtestApplication</mainClass>
+                            <mainClass>com.caching.cachingtest.CachingtestApplication</mainClass>
                         </configuration>
                     </execution>
                 </executions>
@@ -113,10 +107,10 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <configuration>
                     <excludes>
-                        <exclude>com/cacheing/cacheingtest/config/*</exclude>
-                        <exclude>com/cacheing/cacheingtest/model/*</exclude>
-                        <exclude>com/cacheing/cacheingtest/AppConstants.class</exclude>
-                        <exclude>com/cacheing/cacheingtest/CacheingtestApplication.class</exclude>
+                        <exclude>com/caching/cachingtest/config/*</exclude>
+                        <exclude>com/caching/cachingtest/model/*</exclude>
+                        <exclude>com/caching/cachingtest/AppConstants.class</exclude>
+                        <exclude>com/caching/cachingtest/CachingtestApplication.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

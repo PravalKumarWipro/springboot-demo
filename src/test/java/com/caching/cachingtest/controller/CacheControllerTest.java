@@ -4,7 +4,6 @@ import com.caching.cachingtest.AppConstants;
 import com.caching.cachingtest.dao.ApacheIgniteClient;
 import com.caching.cachingtest.dao.CacheDao;
 import com.caching.cachingtest.dao.RedisClient;
-//import com.cacheing.cacheingtest.dao.UnleashCustomClient;
 import com.caching.cachingtest.model.CacheMap;
 import com.caching.cachingtest.model.Response;
 import com.caching.cachingtest.service.CacheServiceImpl;
@@ -15,8 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -66,7 +63,7 @@ public class CacheControllerTest {
     @Test
     public void testGetKey_Success() {
         Integer key = 123;
-        String expectedValue = "Abc";
+        String expectedValue = "Test";
         Mockito.when(userServiceImpl.getValueByKey(key)).thenReturn(expectedValue);
         Response response = cacheController.getKey(key);
         Assert.assertEquals(AppConstants.SUCCESS, response.getStatus());

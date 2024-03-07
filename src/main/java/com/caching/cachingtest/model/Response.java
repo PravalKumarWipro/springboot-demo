@@ -25,7 +25,7 @@ public class Response {
     public String toString() {
         return "Response{" +
                 "status='" + status + '\'' +
-                ", massage='" + message + '\'' +
+                ", message='" + message + '\'' +
                 ", reason='" + reason + '\'' +
                 '}';
     }

@@ -23,8 +23,8 @@ public class CacheServiceImpl implements CacheService {
             String value = cacheDao.getUserById(key);
             logger.info("searching with key :: " + key + ", response received from cache :: " + value);
             if (value == null || value.length() == 0) {
-                logger.error("key " + key + " NotFound");
-                throw new CacheNotFoundException("key " + key + " NotFound");
+                logger.error("key " + key + " Not Found");
+                throw new CacheNotFoundException("key " + key + " Not Found");
             }
             return value;
         }catch(CacheNotFoundException e){

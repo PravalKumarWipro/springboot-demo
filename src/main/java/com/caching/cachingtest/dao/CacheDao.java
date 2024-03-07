@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-/* Serves as an  intermediary between application and cache.It's responsible for all cache-related operations */
+/* DAO class for caching CRUD operations */
 @Service
 public class CacheDao {
 
@@ -26,10 +26,10 @@ public class CacheDao {
     /* Retrieves a value from the cache based on the provided key */
     public String getUserById(int key) throws CacheNotFoundException {
         try {
-            logger.info("Retrieving value for key: "+key);
+            logger.info("Retrieving value for key: "+key + " from " +cacheClient);
             return getClient().getValueById(key);
         }catch(CacheNotFoundException e){
-            logger.error("Cache not found: " + e.getMessage());
+            logger.error("Cache : " + cacheClient+ "  not found: ");
             throw e;
         }
     }
@@ -37,10 +37,10 @@ public class CacheDao {
     /* Deletes a value from the cache using the specified key */
     public Boolean delete(int key) {
        try {
-           logger.info(" Deleting key " + key+ " from cache");
+           logger.info(" Deleting key " + key + " from cache: " + cacheClient);
            return getClient().delete(key);
        }catch(CacheNotFoundException e){
-           logger.error("Failed to delete key from cache with exception : " +e.getMessage());
+           logger.error("Failed to delete key from cache:  "+cacheClient );
            throw e;
        }
     }
@@ -49,9 +49,9 @@ public class CacheDao {
     public void saveOrUpdate(int key, String value) {
         try{
             getClient().saveOrUpdate(key, value);
-            logger.info("Added key :  "+ key);
+            logger.info("Added key :  "+ key +" into cache " +cacheClient);
         }catch (UnableToAddKeyException e){
-            logger.error("Unable to add key  " +key);
+            logger.error("Unable to add key  " +key + "to cache "+cacheClient);
             throw e;
         }
     }

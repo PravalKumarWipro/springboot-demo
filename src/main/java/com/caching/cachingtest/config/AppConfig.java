@@ -16,15 +16,16 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 
-/* This class contains application configuration settings related to different caching systems.
-Developers can refer to this class to access configuration values throughout the application. */
+/* This class contains application configuration settings related to different caching systems */
 @Configuration
 public class AppConfig {
     private static final Logger logger= LoggerFactory.getLogger(AppConfig.class);
 
+    // Config variable for Apache Ignite
     @Value("${ignite.url}")
     String apacheIgniteUrl;
 
+    // Config variable for Redis
     @Value("${redis.url}")
     String redisBaseUrl;
 
@@ -42,6 +43,7 @@ public class AppConfig {
             logger.info("Ignite Client created");
             return client;
         } catch (Exception e) {
+            logger.error("Error creating Ignite Client: ");
             throw new RuntimeException("Error creating Ignite Client : " + e.getMessage(), e);
         }
     }
@@ -54,10 +56,11 @@ public class AppConfig {
             config.useSingleServer()
                     .setAddress(redisBaseUrl);
             RedissonClient client = Redisson.create(config);
-            logger.info("Redisson Client created");
+            logger.info("Redis Client created");
             return client;
         } catch (Exception e) {
-            throw new RuntimeException("Error creating Redisson Client : " + e.getMessage(), e);
+            logger.error("Error creating Redis Client: ");
+            throw new RuntimeException("Error creating Redis Client : " + e.getMessage(), e);
         }
     }
 
@@ -67,7 +70,7 @@ public class AppConfig {
         try {
             return new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(3)).setReadTimeout(Duration.ofSeconds(3)).build();
         } catch (Exception e) {
-            logger.error("Error creating RestTemplate: " + e.getMessage(), e);
+            logger.error("Error creating RestTemplate: ");
             throw new RuntimeException("Error creating RestTemplate: " + e.getMessage(), e);
         }
     }

@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-/* This class handles all Caching related operations */
+/* This class handles all Cache CRUD operations */
 @RestController
 public class CacheController {
 
@@ -45,8 +45,8 @@ public class CacheController {
             response.setValue(userServiceImpl.getValueByKey(key));
             logger.info("Key : "+response.getKey()+"Value : "+response.getValue());
         }catch(Exception e){
-            response.setMessage("Error occurred : "+e.getMessage());
             logger.error("Error occurred while fetching the value for key: "+key);
+            response.setMessage("Error occurred : "+e.getMessage());
         }
         return response;
     }
@@ -60,8 +60,8 @@ public class CacheController {
             response.setMessage("key " + key + " removed");
             logger.info("Successfully removed key : "+key);
         }catch(Exception e){
-            response.setMessage("Error occurred : "+e.getMessage());
             logger.error("Error occurred while deleting key: "+key);
+            response.setMessage("Error occurred : "+e.getMessage());
         }
         return response;
     }
@@ -77,8 +77,8 @@ public class CacheController {
             response.setMessage("key " + cacheMap.getKey() + " added");
             logger.info("Key " + cacheMap.getKey()+ " added/Updated");
         }catch(Exception e){
-            response.setMessage("Error occurred : "+e.getMessage());
             logger.error("Error while adding a key");
+            response.setMessage("Error occurred : "+e.getMessage());
         }
         return response;
     }

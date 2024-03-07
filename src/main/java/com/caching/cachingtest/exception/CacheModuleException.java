@@ -1,6 +1,6 @@
 package com.caching.cachingtest.exception;
 
-/* This class is a custom exception that extends the RuntimeException class and used within a caching module or framework.
+/* This class is a custom exception that extends the RuntimeException class.
 This exception is thrown when there’s an issue related to caching operations within the module */
 public class CacheModuleException extends RuntimeException {
 

@@ -18,9 +18,9 @@ public class ApacheIgniteClient implements GenericCacheClient {
     String CACHE_NAME = "Users";
 
    /*  Retrieves the value associated with the given key from the cache  */
-    public String getValueById(int key) {
+    public String getValueById(String key) {
         try {
-            ClientCache<Integer, String> clientCache = igniteClient.getOrCreateCache(CACHE_NAME);
+            ClientCache<String, String> clientCache = igniteClient.getOrCreateCache(CACHE_NAME);
             String value = clientCache.get(key);
             logger.info("APACHE IGNITE >>> searching user with key :: " + key + ", response received from cache :: " + value);
             return value;
@@ -31,9 +31,9 @@ public class ApacheIgniteClient implements GenericCacheClient {
     }
 
     /* Deletes the entry associated with the given key from the cache */
-    public Boolean delete(int key) {
+    public Boolean delete(String key) {
         try {
-            ClientCache<Integer, String> clientCache = igniteClient.getOrCreateCache(CACHE_NAME);
+            ClientCache<String, String> clientCache = igniteClient.getOrCreateCache(CACHE_NAME);
             Boolean status = clientCache.remove(key);
             logger.info("APACHE IGNITE >>> response after deletion :: " + status);
             return status;
@@ -44,9 +44,9 @@ public class ApacheIgniteClient implements GenericCacheClient {
     }
 
     /* Saves or updates the value associated with the given key in the cache */
-    public void saveOrUpdate(int key, String value) {
+    public void saveOrUpdate(String key, String value) {
         try {
-            ClientCache<Integer, String> clientCache = igniteClient.getOrCreateCache(CACHE_NAME);
+            ClientCache<String, String> clientCache = igniteClient.getOrCreateCache(CACHE_NAME);
             logger.info("APACHE IGNITE >>> added user with key :: " + key);
             clientCache.put(key, value);
         }catch(Exception e){

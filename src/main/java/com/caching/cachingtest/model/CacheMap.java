@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CacheMap {
-    private int key;
+    private String key;
     private String value;
 
     @Override

@@ -24,7 +24,7 @@ public class CacheDao {
     private static final Logger logger= LoggerFactory.getLogger(CacheDao.class);
 
     /* Retrieves a value from the cache based on the provided key */
-    public String getUserById(int key) throws CacheNotFoundException {
+    public String getUserById(String key) throws CacheNotFoundException {
         try {
             logger.info("Retrieving value for key: "+key + " from " +cacheClient);
             return getClient().getValueById(key);
@@ -35,7 +35,7 @@ public class CacheDao {
     }
 
     /* Deletes a value from the cache using the specified key */
-    public Boolean delete(int key) {
+    public Boolean delete(String key) {
        try {
            logger.info(" Deleting key " + key + " from cache: " + cacheClient);
            return getClient().delete(key);
@@ -46,7 +46,7 @@ public class CacheDao {
     }
 
     /* Saves or updates a value in the cache with the given key and value */
-    public void saveOrUpdate(int key, String value) {
+    public void saveOrUpdate(String key, String value) {
         try{
             getClient().saveOrUpdate(key, value);
             logger.info("Added key :  "+ key +" into cache " +cacheClient);

@@ -23,43 +23,49 @@ public class CacheServiceImplTest {
 
     @Test
     public void testGetUserById_Success() throws CacheNotFoundException {
-        int key = 123;
+        String key = "Test123";
         String expectedUname = "Test";
         when(cacheDao.getUserById(key)).thenReturn(expectedUname);
         String actualUname = userServiceImpl.getValueByKey(key);
         assertEquals(expectedUname , actualUname);
     }
     @Test
-    public void testGetUserById_Failure() {
-        int key = 123;
+    public void testGetUserById_Failure_Null() {
+        String key = "Test123";
         when(cacheDao.getUserById(key)).thenReturn(null);
+        assertThrows(CacheNotFoundException.class, () -> userServiceImpl.getValueByKey(key));
+    }
+
+    @Test
+    public void testGetUserById_Failure_Empty() {
+        String key = "Test123";
+        when(cacheDao.getUserById(key)).thenReturn("");
         assertThrows(CacheNotFoundException.class, () -> userServiceImpl.getValueByKey(key));
     }
     @Test
     public void testGetUserById_Exception(){
-        int invalidKey= -1;
+        String invalidKey= "-1";
         when(cacheDao.getUserById(invalidKey)).thenThrow(new CacheNotFoundException("Exception"));
         assertThrows(CacheNotFoundException.class,()->userServiceImpl.getValueByKey(invalidKey));
     }
     @Test
     public void testDelete_Success() throws CacheNotFoundException {
-        int key = 123;
+        String key = "Test123";
         when(cacheDao.delete(key)).thenReturn(true);
         boolean status = cacheDao.delete(key);
         assertDoesNotThrow(()->userServiceImpl.delete(key));
         assertTrue(status);
     }
 
-
     @Test
     public void testDelete_Failure() {
-        int key = 123;
+        String key = "Test123";
         when(cacheDao.delete(key)).thenReturn(false);
         assertThrows(CacheNotFoundException.class, () -> userServiceImpl.delete(key));
     }
     @Test
     public void testSaveOrUpdate_Success() throws UnableToAddKeyException {
-        int key = 123;
+        String key = "Test123";
         String value = "Test";
         Mockito.doNothing().when(cacheDao).saveOrUpdate(key, value);
         userServiceImpl.saveOrUpdate(key, value);
@@ -67,7 +73,7 @@ public class CacheServiceImplTest {
     }
     @Test
     public void testSaveOrUpdate_Failure() throws UnableToAddKeyException {
-        int key = 123;
+        String key = "Test123";
         String value = "Test";
         Mockito.doThrow(new RuntimeException()).when(cacheDao).saveOrUpdate(key, value);
         assertThrows(UnableToAddKeyException.class, () -> userServiceImpl.saveOrUpdate(key, value));

@@ -37,7 +37,7 @@ public class CacheDaoTest {
 
     @Test
     public void testGetUserById_ApacheIgnite_Success() throws CacheNotFoundException {
-        int userId = 123;
+        String userId = "Test123";
         String expectedUser = "Test";
         cacheDao.cacheClient = AppConstants.CACHE_APACHE_IGNITE;
         when(apacheIgniteClient.getValueById(userId)).thenReturn(expectedUser);
@@ -48,7 +48,7 @@ public class CacheDaoTest {
     }
     @Test
     public void testGetUserById_ApacheIgnite_Failure(){
-        int userId = 123;
+        String userId = "123";
         cacheDao.cacheClient = AppConstants.CACHE_APACHE_IGNITE;
         when(apacheIgniteClient.getValueById(userId)).thenThrow(new CacheNotFoundException("Cache not found"));
         Assert.assertThrows(CacheNotFoundException.class,()-> cacheDao.getUserById(userId));
@@ -56,7 +56,7 @@ public class CacheDaoTest {
 
     @Test
     public void testGetUserById_Redis_Success() throws CacheNotFoundException {
-        int userId = 456;
+        String userId = "test456";
         String expectedUser = "Test";
         cacheDao.cacheClient = AppConstants.CACHE_REDIS;
         when(redisClient.getValueById(userId)).thenReturn(expectedUser);
@@ -67,7 +67,7 @@ public class CacheDaoTest {
     }
     @Test
     public void testGetUserById_Redis_Failure(){
-        int userId = 123;
+        String userId = "test456";
         cacheDao.cacheClient = AppConstants.CACHE_REDIS;
         when(redisClient.getValueById(userId)).thenThrow(new CacheNotFoundException("Cache not found"));
         Assert.assertThrows(CacheNotFoundException.class,()-> cacheDao.getUserById(userId));
@@ -75,7 +75,7 @@ public class CacheDaoTest {
 
     @Test
     public void testDelete_ApacheIgnite_Success() {
-        int userId = 789;
+        String userId = "test456";
         cacheDao.cacheClient = AppConstants.CACHE_APACHE_IGNITE;
         when(apacheIgniteClient.delete(userId)).thenReturn(true);
         boolean result = cacheDao.delete(userId);
@@ -86,7 +86,7 @@ public class CacheDaoTest {
 
     @Test
     public void testDelete_ApacheIgnite_Failure(){
-        int userId = 789;
+        String userId = "test456";
         cacheDao.cacheClient = AppConstants.CACHE_APACHE_IGNITE;
         when(apacheIgniteClient.delete(userId)).thenThrow(new CacheNotFoundException("Failed to delete key from cache with exception : "));
         Assert.assertThrows(CacheNotFoundException.class,()->cacheDao.delete(userId));
@@ -94,7 +94,7 @@ public class CacheDaoTest {
 
     @Test
     public void testDelete_Redis_Success() {
-        int userId = 987;
+        String userId = "test456";
         cacheDao.cacheClient = AppConstants.CACHE_REDIS;
         when(redisClient.delete(userId)).thenReturn(true);
         boolean result = cacheDao.delete(userId);
@@ -105,7 +105,7 @@ public class CacheDaoTest {
 
     @Test
     public void testDelete_Redis_Failure(){
-        int userId = 987;
+        String userId = "test456";
         cacheDao.cacheClient = AppConstants.CACHE_REDIS;
         when(redisClient.delete(userId)).thenThrow(new CacheNotFoundException("Failed to delete key from cache with exception : "));
         Assert.assertThrows(CacheNotFoundException.class,()->cacheDao.delete(userId));
@@ -113,7 +113,7 @@ public class CacheDaoTest {
 
     @Test
     public void testSaveOrUpdate_ApacheIgnite_Success() {
-        int userId = 111;
+        String userId = "test456";
         String userName = "Test";
         cacheDao.cacheClient = AppConstants.CACHE_APACHE_IGNITE;
         cacheDao.saveOrUpdate(userId, userName);
@@ -123,7 +123,7 @@ public class CacheDaoTest {
 
     @Test
     public void testSaveOrUpdate_ApacheIgnite_Failure(){
-        int userId = 111;
+        String userId = "test456";
         String userName = "Test";
         cacheDao.cacheClient = AppConstants.CACHE_APACHE_IGNITE;
         doThrow(new UnableToAddKeyException("Unable to add key")).when(apacheIgniteClient).saveOrUpdate(userId,userName);
@@ -132,7 +132,7 @@ public class CacheDaoTest {
 
     @Test
     public void testSaveOrUpdate_Redis_Success() {
-        int userId = 222;
+        String userId = "test456";
         String userName = "Test";
         cacheDao.cacheClient = AppConstants.CACHE_REDIS;
         cacheDao.saveOrUpdate(userId, userName);
@@ -141,7 +141,7 @@ public class CacheDaoTest {
     }
     @Test
     public void testSaveOrUpdate_Redis_Failure(){
-        int userId = 222;
+        String userId = "test456";
         String userName = "Test";
         cacheDao.cacheClient = AppConstants.CACHE_REDIS;
         doThrow(new UnableToAddKeyException("Unable to add key")).when(redisClient).saveOrUpdate(userId,userName);

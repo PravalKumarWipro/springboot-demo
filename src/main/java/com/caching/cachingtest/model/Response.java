@@ -14,7 +14,7 @@ public class Response {
     private String status;
     private String message;
     private String reason;
-    private Integer key;
+    private String key;
     private String value;
 
     public Response(String status) {

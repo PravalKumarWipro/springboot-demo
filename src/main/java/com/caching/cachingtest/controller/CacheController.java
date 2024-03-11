@@ -38,7 +38,7 @@ public class CacheController {
 
     /* Endpoint to retrieve a value from the cache based on a key */
     @GetMapping("/caching/{key}")
-    public Response getKey(@PathVariable("key") int key) {
+    public Response getKey(@PathVariable("key") String key) {
         Response response = new Response(AppConstants.SUCCESS);
         try {
             response.setKey(key);
@@ -53,7 +53,7 @@ public class CacheController {
 
     /* Endpoint to delete a value from the cache based on a key */
     @DeleteMapping("/caching/{key}")
-    public Response deleteKey(@PathVariable("key") int key) {
+    public Response deleteKey(@PathVariable("key") String key) {
         Response response = new Response(AppConstants.SUCCESS);
         try {
             userServiceImpl.delete(key);

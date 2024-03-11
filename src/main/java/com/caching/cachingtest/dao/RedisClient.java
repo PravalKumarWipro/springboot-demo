@@ -19,7 +19,7 @@ public class RedisClient implements GenericCacheClient {
     private static final Logger logger= LoggerFactory.getLogger(RedisClient.class);
 
     /* Retrieves a value from the Redis cache based on the provided key */
-    public String getValueById(int key) throws CacheNotFoundException {
+    public String getValueById(String key) throws CacheNotFoundException {
         try {
             RMapCache<String, String> userCache = redissonClient.getMapCache(CACHE_NAME);
             String value = userCache.get(String.valueOf(key));
@@ -32,7 +32,7 @@ public class RedisClient implements GenericCacheClient {
     }
 
     /* Deletes a value from the Redis cache based on the provided key */
-    public Boolean delete(int key) {
+    public Boolean delete(String key) {
         try {
             RMapCache<String, String> userCache = redissonClient.getMapCache(CACHE_NAME);
             String respose = userCache.remove(String.valueOf(key));
@@ -48,7 +48,7 @@ public class RedisClient implements GenericCacheClient {
     }
 
     /* Saves Or Updates key-value to the Redis cache  */
-    public void saveOrUpdate(int key, String value) {
+    public void saveOrUpdate(String key, String value) {
        try {
            RMapCache<String, String> userCache = redissonClient.getMapCache(CACHE_NAME);
            logger.info("REDIS >>> added user with key :: " + key);

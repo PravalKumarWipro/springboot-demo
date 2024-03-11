@@ -6,9 +6,9 @@ import com.caching.cachingtest.exception.KeyAlreadyExistsException;
 /* Defines methods required for caching operations*/
 public interface CacheService {
 
-    String getValueByKey(int key) throws CacheNotFoundException;
+    String getValueByKey(String key) throws CacheNotFoundException;
 
-    void delete(int key) throws CacheNotFoundException;
+    void delete(String key) throws CacheNotFoundException;
 
-    void saveOrUpdate(int key, String value) throws KeyAlreadyExistsException;
+    void saveOrUpdate(String key, String value) throws KeyAlreadyExistsException;
 }

@@ -31,14 +31,12 @@ public class CacheControllerTest {
 
     @Test
     public void testApiIgnite_Success() {
-        String token = "abc";
         Mockito.when(cacheDao.getClient()).thenReturn(new ApacheIgniteClient());
         Response response = cacheController.testApi();
         assertEquals("Cache Client :: ApacheIgniteClient", response.getMessage());
     }
     @Test
     public void testApiIgnite_Failure(){
-        String token = "abc";
         when(cacheDao.getClient()).thenThrow(new RuntimeException("Error while fetching the Client"));
         Response response= cacheController.testApi();
         Assert.assertEquals(AppConstants.SUCCESS,response.getStatus());
@@ -46,14 +44,12 @@ public class CacheControllerTest {
     }
     @Test
     public void testApiRedis_Success() {
-        String token = "abc";
         Mockito.when(cacheDao.getClient()).thenReturn(new RedisClient());
         Response response = cacheController.testApi();
         assertEquals("Cache Client :: RedisClient", response.getMessage());
     }
     @Test
     public void testApiRedis_Failure() {
-        String token = "abc";
         Mockito.when(cacheDao.getClient()).thenThrow(new RuntimeException("Error while fetching the Client"));
         Response response = cacheController.testApi();
         Assert.assertEquals(AppConstants.SUCCESS,response.getStatus());
@@ -62,7 +58,7 @@ public class CacheControllerTest {
 
     @Test
     public void testGetKey_Success() {
-        Integer key = 123;
+        String key = "123";
         String expectedValue = "Test";
         Mockito.when(userServiceImpl.getValueByKey(key)).thenReturn(expectedValue);
         Response response = cacheController.getKey(key);
@@ -72,7 +68,7 @@ public class CacheControllerTest {
     }
     @Test
     public void testGetKey_Failure() {
-        Integer key = 456;
+        String key = "456";
         when(userServiceImpl.getValueByKey(key)).thenThrow(new RuntimeException("Key not found"));
         Response response = cacheController.getKey(key);
         Assert.assertEquals(AppConstants.SUCCESS,response.getStatus());
@@ -81,7 +77,7 @@ public class CacheControllerTest {
 
     @Test
     public void testDelete_Success() {
-        int validKey = 123;
+        String validKey = "123";
         doNothing().when(userServiceImpl).delete(validKey);
         Response responseEntity = cacheController.deleteKey(validKey);
         Assert.assertEquals("key 123 removed",responseEntity.getMessage());
@@ -89,7 +85,7 @@ public class CacheControllerTest {
 
     @Test
     public void testDelete_Failure(){
-        int invalidKey = -1;
+        String invalidKey = "-1";
         String errorMessage="key not found";
         doThrow(new RuntimeException(errorMessage)).when(userServiceImpl).delete(invalidKey);
         Response responseEntity = cacheController.deleteKey(invalidKey);
@@ -98,7 +94,7 @@ public class CacheControllerTest {
 
     @Test
     public void testAddKey_Success()  {
-        int key1 = 123;
+        String key1 = "Test123";
         CacheMap cacheMap = new CacheMap(key1, "Test");
         Response expectedResponse = new Response(AppConstants.SUCCESS);
         expectedResponse.setMessage("key " + cacheMap.getKey() + " added");
@@ -109,7 +105,7 @@ public class CacheControllerTest {
     }
     @Test
     public void testAddKey_Failure(){
-        int invalidKey = -1;
+        String invalidKey = "-1";
         String invalidValue = "invalidValue";
         String errorMessage = "Unable to save key";
         Mockito.doThrow(new RuntimeException(errorMessage)).when(userServiceImpl).saveOrUpdate(invalidKey, invalidValue);

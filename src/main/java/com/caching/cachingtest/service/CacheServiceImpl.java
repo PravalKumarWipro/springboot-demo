@@ -18,7 +18,7 @@ public class CacheServiceImpl implements CacheService {
 
     /*  Retrieves a value from the cache based on the given key */
     @Override
-    public String getValueByKey(int key) throws CacheNotFoundException {
+    public String getValueByKey(String key) throws CacheNotFoundException {
         try {
             String value = cacheDao.getUserById(key);
             logger.info("searching with key :: " + key + ", response received from cache :: " + value);
@@ -35,7 +35,7 @@ public class CacheServiceImpl implements CacheService {
 
     /* Deletes a value from the cache using the specified key*/
     @Override
-    public void delete(int key) throws CacheNotFoundException {
+    public void delete(String key) throws CacheNotFoundException {
         try {
             Boolean status = cacheDao.delete(key);
             logger.info("deleting key :: " + key + ", response received from cache :: " + status);
@@ -51,7 +51,7 @@ public class CacheServiceImpl implements CacheService {
 
     /* Saves or updates a value in the cache with the given key and value*/
     @Override
-    public void saveOrUpdate(int key, String value) throws UnableToAddKeyException {
+    public void saveOrUpdate(String key, String value) throws UnableToAddKeyException {
         try {
             cacheDao.saveOrUpdate(key, value);
             logger.info("added key :: " + key);

@@ -10,6 +10,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.redisson.api.RMapCache;
 import org.redisson.api.RedissonClient;
 
+import java.util.concurrent.TimeUnit;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -72,10 +74,11 @@ public class RedisClientTest {
         public void testSaveOrUpdate_Success() {
             String userId = "test456";
             String userName = "Test";
+            long ttl = 0;
             doReturn(userCache).when(redissonClient).getMapCache("Users");
             redisClient.saveOrUpdate(userId, userName);
             verify(redissonClient).getMapCache("Users");
-            verify(userCache).put(userId, userName);
+            verify(userCache).put(userId, userName,ttl, TimeUnit.SECONDS);
         }
         @Test
         public void testSaveOrUpdate_Failure(){

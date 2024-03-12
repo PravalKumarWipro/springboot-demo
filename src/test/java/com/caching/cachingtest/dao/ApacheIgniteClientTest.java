@@ -18,7 +18,8 @@ public class ApacheIgniteClientTest {
     ApacheIgniteClient apacheIgniteClient;
     @Mock
     IgniteClient igniteClient;
-
+    @Mock
+    ClientCache<String, String> clientCache;
     @Test
     public void testGetUserById_Success() {
         String key="Test123";
@@ -43,8 +44,6 @@ public class ApacheIgniteClientTest {
     public void testDelete_Success(){
         String key="Test123";
         Boolean expectedStatus=true;
-        ClientCache<String, String> clientCache = Mockito.mock(ClientCache.class);
-        doReturn(clientCache).when(igniteClient).getOrCreateCache("Users");
         when(clientCache.remove(key)).thenReturn(expectedStatus);
         Boolean actualStatus= apacheIgniteClient.delete(key);
         Assert.assertEquals(expectedStatus,actualStatus);
@@ -53,7 +52,7 @@ public class ApacheIgniteClientTest {
     @Test
     public void testDelete_Failure(){
         String key="Test123";
-        when(igniteClient.getOrCreateCache("Users")).thenThrow(new RuntimeException("Error while deleting key"));
+        when(clientCache.remove(any())).thenThrow(new RuntimeException("Error while deleting key"));
         boolean result= apacheIgniteClient.delete(key);
         Assert.assertFalse(result);
     }
@@ -63,6 +62,8 @@ public class ApacheIgniteClientTest {
         String expectedvalue="Test";
         ClientCache<String, String> clientCache = Mockito.mock(ClientCache.class);
         doReturn(clientCache).when(igniteClient).getOrCreateCache("Users");
+        doReturn(clientCache).when(clientCache).withExpirePolicy(any());
+        doNothing().when(clientCache).put(any(),any());
         apacheIgniteClient.saveOrUpdate(key,expectedvalue);
         verify(clientCache,times(1)).put(key,expectedvalue);
     }

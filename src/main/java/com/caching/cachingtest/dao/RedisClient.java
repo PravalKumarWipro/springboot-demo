@@ -6,7 +6,10 @@ import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
 
 /* Interacts with Redis for caching purposes */
 @Service
@@ -16,6 +19,9 @@ public class RedisClient implements GenericCacheClient {
     RedissonClient redissonClient;
 
     String CACHE_NAME = "Users";
+
+    @Value("${cachettl:300}")
+    public long cacheTtl;
     private static final Logger logger= LoggerFactory.getLogger(RedisClient.class);
 
     /* Retrieves a value from the Redis cache based on the provided key */
@@ -52,7 +58,7 @@ public class RedisClient implements GenericCacheClient {
        try {
            RMapCache<String, String> userCache = redissonClient.getMapCache(CACHE_NAME);
            logger.info("REDIS >>> added user with key :: " + key);
-           userCache.put(String.valueOf(key), value);
+           userCache.put(String.valueOf(key), value, cacheTtl, TimeUnit.SECONDS);
        }catch(Exception e){
            logger.error("Error while saving or updating cache: " + e.getMessage());
            throw e;

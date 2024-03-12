@@ -29,8 +29,6 @@ public class AppConfig {
     @Value("${redis.url}")
     String redisBaseUrl;
 
-    @Value("${cacheDuration:300}")
-    public long cacheDuration;
 
     String CACHE_NAME = "Users";
 

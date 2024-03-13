@@ -93,12 +93,28 @@ public class CacheControllerTest {
     }
 
     @Test
-    public void testAddKey_Success()  {
+    public void testAddKey_noTTL_Success()  {
         String key1 = "Test123";
-        CacheMap cacheMap = new CacheMap(key1, "Test");
+        CacheMap cacheMap = new CacheMap();
+        cacheMap.setKey("01");
+        cacheMap.setValue("data");
         Response expectedResponse = new Response(AppConstants.SUCCESS);
         expectedResponse.setMessage("key " + cacheMap.getKey() + " added");
-        doNothing().when(userServiceImpl).saveOrUpdate(cacheMap.getKey(),cacheMap.getValue());
+        doNothing().when(userServiceImpl).saveOrUpdate(cacheMap);
+        Response response = cacheController.addKey(cacheMap);
+        assertEquals(expectedResponse.getStatus(), response.getStatus());
+        assertEquals(expectedResponse.getMessage(), response.getMessage());
+    }
+    @Test
+    public void testAddKey_Success()  {
+        String key1 = "Test123";
+        CacheMap cacheMap = new CacheMap();
+        cacheMap.setKey("01");
+        cacheMap.setValue("data");
+        cacheMap.setTtl(10L);
+        Response expectedResponse = new Response(AppConstants.SUCCESS);
+        expectedResponse.setMessage("key " + cacheMap.getKey() + " added");
+        doNothing().when(userServiceImpl).saveOrUpdate(cacheMap);
         Response response = cacheController.addKey(cacheMap);
         assertEquals(expectedResponse.getStatus(), response.getStatus());
         assertEquals(expectedResponse.getMessage(), response.getMessage());
@@ -108,8 +124,8 @@ public class CacheControllerTest {
         String invalidKey = "-1";
         String invalidValue = "invalidValue";
         String errorMessage = "Unable to save key";
-        Mockito.doThrow(new RuntimeException(errorMessage)).when(userServiceImpl).saveOrUpdate(invalidKey, invalidValue);
-        Response actualResponse = cacheController.addKey(new CacheMap(invalidKey, invalidValue));
+        Mockito.doThrow(new RuntimeException(errorMessage)).when(userServiceImpl).saveOrUpdate(new CacheMap());
+        Response actualResponse = cacheController.addKey(new CacheMap(invalidKey, invalidValue,30L));
         assertEquals("Error occurred : " + errorMessage, actualResponse.getMessage());
     }
 }

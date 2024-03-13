@@ -11,14 +11,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CacheMap {
+
     private String key;
     private String value;
+    private Long ttl;
 
     @Override
     public String toString() {
         return "CacheMap{" +
-                "key=" + key +
+                "key='" + key + '\'' +
                 ", value='" + value + '\'' +
+                ", ttl=" + ttl +
                 '}';
     }
 }

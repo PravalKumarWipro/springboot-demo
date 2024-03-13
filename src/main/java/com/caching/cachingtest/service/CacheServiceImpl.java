@@ -3,6 +3,7 @@ package com.caching.cachingtest.service;
 import com.caching.cachingtest.dao.CacheDao;
 import com.caching.cachingtest.exception.CacheNotFoundException;
 import com.caching.cachingtest.exception.UnableToAddKeyException;
+import com.caching.cachingtest.model.CacheMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ public class CacheServiceImpl implements CacheService {
 
     @Autowired
     public CacheDao cacheDao;
-    private static final Logger logger= LoggerFactory.getLogger(CacheServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(CacheServiceImpl.class);
 
     /*  Retrieves a value from the cache based on the given key */
     @Override
@@ -27,7 +28,7 @@ public class CacheServiceImpl implements CacheService {
                 throw new CacheNotFoundException("key " + key + " Not Found");
             }
             return value;
-        }catch(CacheNotFoundException e){
+        } catch (CacheNotFoundException e) {
             logger.error("Exception while fetching value by key");
             throw e;
         }
@@ -51,13 +52,13 @@ public class CacheServiceImpl implements CacheService {
 
     /* Saves or updates a value in the cache with the given key and value*/
     @Override
-    public void saveOrUpdate(String key, String value) throws UnableToAddKeyException {
+    public void saveOrUpdate(CacheMap cacheMap) throws UnableToAddKeyException {
         try {
-            cacheDao.saveOrUpdate(key, value);
-            logger.info("added key :: " + key);
+            cacheDao.saveOrUpdate(cacheMap);
+            logger.info("added key :: " + cacheMap.getKey()+" \t data :: "+cacheMap);
         } catch (Exception e) {
-            logger.error("key" + key + " Unable To Save");
-            throw new UnableToAddKeyException("key" + key + " Unable To Save");
+            logger.error("key" + cacheMap.getKey() + " Unable To Save");
+            throw new UnableToAddKeyException("key" + cacheMap.getKey() + " Unable To Save");
         }
     }
 }

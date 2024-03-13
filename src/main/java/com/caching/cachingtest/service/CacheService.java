@@ -2,6 +2,7 @@ package com.caching.cachingtest.service;
 
 import com.caching.cachingtest.exception.CacheNotFoundException;
 import com.caching.cachingtest.exception.KeyAlreadyExistsException;
+import com.caching.cachingtest.model.CacheMap;
 
 /* Defines methods required for caching operations*/
 public interface CacheService {
@@ -10,5 +11,5 @@ public interface CacheService {
 
     void delete(String key) throws CacheNotFoundException;
 
-    void saveOrUpdate(String key, String value) throws KeyAlreadyExistsException;
+    void saveOrUpdate(CacheMap cacheMap) throws KeyAlreadyExistsException;
 }

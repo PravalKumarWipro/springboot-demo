@@ -15,8 +15,8 @@ services:
       REDIS_URL: redis://redis:6379
       IGNITE_URL: ignite:10800
       CACHE_CLIENT: APACHE_IGNITE
-      CACHETTL: 30
-    ports: 
+
+    ports:
       - 7070:7070
     depends_on:
       - redis

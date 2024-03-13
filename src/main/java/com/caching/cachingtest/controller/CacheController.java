@@ -20,7 +20,7 @@ public class CacheController {
     @Autowired
     private CacheDao cacheDao;
 
-    private static final Logger logger= LoggerFactory.getLogger(CacheController.class);
+    private static final Logger logger = LoggerFactory.getLogger(CacheController.class);
 
     /* Endpoint to test the Client */
     @GetMapping("/caching/test")
@@ -28,9 +28,9 @@ public class CacheController {
         Response response = new Response(AppConstants.SUCCESS);
         try {
             response.setMessage("Cache Client :: " + cacheDao.getClient());
-            logger.info("Cache Client : "+cacheDao.getClient());
-        }catch (Exception e){
-            response.setMessage("Error occurred : "+e.getMessage());
+            logger.info("Cache Client : " + cacheDao.getClient());
+        } catch (Exception e) {
+            response.setMessage("Error occurred : " + e.getMessage());
             logger.error("Error while fetching the Client");
         }
         return response;
@@ -58,10 +58,10 @@ public class CacheController {
         try {
             userServiceImpl.delete(key);
             response.setMessage("key " + key + " removed");
-            logger.info("Successfully removed key : "+key);
-        }catch(Exception e){
-            logger.error("Error occurred while deleting key: "+key);
-            response.setMessage("Error occurred : "+e.getMessage());
+            logger.info("Successfully removed key : " + key);
+        } catch (Exception e) {
+            logger.error("Error occurred while deleting key: " + key);
+            response.setMessage("Error occurred : " + e.getMessage());
         }
         return response;
     }
@@ -71,14 +71,17 @@ public class CacheController {
     public Response addKey(@RequestBody CacheMap cacheMap) {
         Response response = new Response(AppConstants.SUCCESS);
         try {
-            userServiceImpl.saveOrUpdate(cacheMap.getKey(), cacheMap.getValue());
+            if (cacheMap.getTtl() == null || cacheMap.getTtl() == 0) {
+                cacheMap.setTtl(Long.MAX_VALUE);
+            }
+            userServiceImpl.saveOrUpdate(cacheMap);
             response.setKey(cacheMap.getKey());
             response.setValue(cacheMap.getValue());
             response.setMessage("key " + cacheMap.getKey() + " added");
-            logger.info("Key " + cacheMap.getKey()+ " added/Updated");
-        }catch(Exception e){
+            logger.info("Key " + cacheMap.getKey() + " added/Updated");
+        } catch (Exception e) {
             logger.error("Error while adding a key");
-            response.setMessage("Error occurred : "+e.getMessage());
+            response.setMessage("Error occurred : " + e.getMessage());
         }
         return response;
     }

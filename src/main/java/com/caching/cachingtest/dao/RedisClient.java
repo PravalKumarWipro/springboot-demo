@@ -1,6 +1,7 @@
 package com.caching.cachingtest.dao;
 
 import com.caching.cachingtest.exception.CacheNotFoundException;
+import com.caching.cachingtest.model.CacheMap;
 import org.redisson.api.RMapCache;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -17,17 +18,15 @@ public class RedisClient implements GenericCacheClient {
 
     @Autowired
     RedissonClient redissonClient;
+    @Value("${cache.name:Cache}")
+    String cacheName;
 
-    String CACHE_NAME = "Users";
-
-    @Value("${cachettl:300}")
-    public long cacheTtl;
     private static final Logger logger= LoggerFactory.getLogger(RedisClient.class);
 
     /* Retrieves a value from the Redis cache based on the provided key */
     public String getValueById(String key) throws CacheNotFoundException {
         try {
-            RMapCache<String, String> userCache = redissonClient.getMapCache(CACHE_NAME);
+            RMapCache<String, String> userCache = redissonClient.getMapCache(cacheName);
             String value = userCache.get(String.valueOf(key));
             logger.info("REDIS >>> searching user with key :: " + key + ", response received from cache :: " + value);
             return value;
@@ -40,7 +39,7 @@ public class RedisClient implements GenericCacheClient {
     /* Deletes a value from the Redis cache based on the provided key */
     public Boolean delete(String key) {
         try {
-            RMapCache<String, String> userCache = redissonClient.getMapCache(CACHE_NAME);
+            RMapCache<String, String> userCache = redissonClient.getMapCache(cacheName);
             String respose = userCache.remove(String.valueOf(key));
             logger.info("REDIS >>> response after deletion :: " + respose);
             if (respose == null) {
@@ -54,11 +53,11 @@ public class RedisClient implements GenericCacheClient {
     }
 
     /* Saves Or Updates key-value to the Redis cache  */
-    public void saveOrUpdate(String key, String value) {
+    public void saveOrUpdate(CacheMap cacheMap) {
        try {
-           RMapCache<String, String> userCache = redissonClient.getMapCache(CACHE_NAME);
-           logger.info("REDIS >>> added user with key :: " + key);
-           userCache.put(String.valueOf(key), value, cacheTtl, TimeUnit.SECONDS);
+           RMapCache<String, String> userCache = redissonClient.getMapCache(cacheName);
+           logger.info("REDIS >>> added user with key :: " + cacheMap.getKey());
+           userCache.put(String.valueOf(cacheMap.getKey()), cacheMap.getValue(), cacheMap.getTtl(), TimeUnit.SECONDS);
        }catch(Exception e){
            logger.error("Error while saving or updating cache: " + e.getMessage());
            throw e;

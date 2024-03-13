@@ -3,6 +3,7 @@ package com.caching.cachingtest.service;
 import com.caching.cachingtest.dao.CacheDao;
 import com.caching.cachingtest.exception.CacheNotFoundException;
 import com.caching.cachingtest.exception.UnableToAddKeyException;
+import com.caching.cachingtest.model.CacheMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -67,15 +68,15 @@ public class CacheServiceImplTest {
     public void testSaveOrUpdate_Success() throws UnableToAddKeyException {
         String key = "Test123";
         String value = "Test";
-        Mockito.doNothing().when(cacheDao).saveOrUpdate(key, value);
-        userServiceImpl.saveOrUpdate(key, value);
-        verify(cacheDao, times(1)).saveOrUpdate(key, value);
+        Mockito.doNothing().when(cacheDao).saveOrUpdate(new CacheMap(key, value,30L));
+        userServiceImpl.saveOrUpdate(new CacheMap(key, value,30L));
+        verify(cacheDao, times(1)).saveOrUpdate(new CacheMap(key, value,30L));
     }
     @Test
     public void testSaveOrUpdate_Failure() throws UnableToAddKeyException {
         String key = "Test123";
         String value = "Test";
-        Mockito.doThrow(new RuntimeException()).when(cacheDao).saveOrUpdate(key, value);
-        assertThrows(UnableToAddKeyException.class, () -> userServiceImpl.saveOrUpdate(key, value));
+        Mockito.doThrow(new RuntimeException()).when(cacheDao).saveOrUpdate(new CacheMap(key, value,30L));
+        assertThrows(UnableToAddKeyException.class, () -> userServiceImpl.saveOrUpdate(new CacheMap(key, value,30L)));
     }
 }

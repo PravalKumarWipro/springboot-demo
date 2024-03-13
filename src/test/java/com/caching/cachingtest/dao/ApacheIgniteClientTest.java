@@ -1,5 +1,6 @@
 package com.caching.cachingtest.dao;
 
+import com.caching.cachingtest.model.CacheMap;
 import org.apache.ignite.client.ClientCache;
 import org.apache.ignite.client.IgniteClient;
 import org.junit.Assert;
@@ -9,10 +10,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.TestPropertySource;
 
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
+@TestPropertySource("classpath:test.properties")
 public class ApacheIgniteClientTest {
     @InjectMocks
     ApacheIgniteClient apacheIgniteClient;
@@ -25,7 +28,7 @@ public class ApacheIgniteClientTest {
         String key="Test123";
         String expectedvalue="Test";
         ClientCache<String, String> clientCache = Mockito.mock(ClientCache.class);
-        doReturn(clientCache).when(igniteClient).getOrCreateCache("Users");
+        doReturn(clientCache).when(igniteClient).getOrCreateCache("Cache");
         when(clientCache.get(key)).thenReturn(expectedvalue);
         String actualvalue=apacheIgniteClient.getValueById(key);
         Assert.assertEquals(expectedvalue, actualvalue);
@@ -35,7 +38,7 @@ public class ApacheIgniteClientTest {
     public void testGetUserById_Failure(){
         String key="Test123";
         ClientCache<String, String> clientCache = Mockito.mock(ClientCache.class);
-        when(igniteClient.getOrCreateCache("Users")).thenThrow(new RuntimeException("Error while searching user with key from Apache Ignite"));
+        when(igniteClient.getOrCreateCache("Cache")).thenThrow(new RuntimeException("Error while searching user with key from Apache Ignite"));
         String result=apacheIgniteClient.getValueById(key);
         Assert.assertNull(result);
     }
@@ -61,17 +64,17 @@ public class ApacheIgniteClientTest {
         String key="Test123";
         String expectedvalue="Test";
         ClientCache<String, String> clientCache = Mockito.mock(ClientCache.class);
-        doReturn(clientCache).when(igniteClient).getOrCreateCache("Users");
+        doReturn(clientCache).when(igniteClient).getOrCreateCache("Cache");
         doReturn(clientCache).when(clientCache).withExpirePolicy(any());
         doNothing().when(clientCache).put(any(),any());
-        apacheIgniteClient.saveOrUpdate(key,expectedvalue);
+        apacheIgniteClient.saveOrUpdate(new CacheMap(key,expectedvalue,30L));
         verify(clientCache,times(1)).put(key,expectedvalue);
     }
     @Test
     public void testSaveOrUpdate_Failure(){
         String key="Test123";
         String expectedvalue="Test";
-        when(igniteClient.getOrCreateCache("Users")).thenThrow(new RuntimeException("Error while saving/updating the value for key"));
-        Assert.assertThrows(RuntimeException.class,()->apacheIgniteClient.saveOrUpdate(key,expectedvalue));
+        when(igniteClient.getOrCreateCache("Cache")).thenThrow(new RuntimeException("Error while saving/updating the value for key"));
+        Assert.assertThrows(RuntimeException.class,()->apacheIgniteClient.saveOrUpdate(new CacheMap(key,expectedvalue,30L)));
     }
 }

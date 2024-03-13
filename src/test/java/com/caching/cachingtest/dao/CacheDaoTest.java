@@ -4,6 +4,7 @@ package com.caching.cachingtest.dao;
 import com.caching.cachingtest.AppConstants;
 import com.caching.cachingtest.exception.CacheNotFoundException;
 import com.caching.cachingtest.exception.UnableToAddKeyException;
+import com.caching.cachingtest.model.CacheMap;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -116,9 +117,9 @@ public class CacheDaoTest {
         String userId = "test456";
         String userName = "Test";
         cacheDao.cacheClient = AppConstants.CACHE_APACHE_IGNITE;
-        cacheDao.saveOrUpdate(userId, userName);
-        verify(apacheIgniteClient, times(1)).saveOrUpdate(userId, userName);
-        verify(redisClient, never()).saveOrUpdate(userId, userName);
+        cacheDao.saveOrUpdate(new CacheMap(userId, userName,30L));
+        verify(apacheIgniteClient, times(1)).saveOrUpdate(new CacheMap(userId, userName,30L));
+        verify(redisClient, never()).saveOrUpdate(new CacheMap(userId, userName,30L));
     }
 
     @Test
@@ -126,8 +127,8 @@ public class CacheDaoTest {
         String userId = "test456";
         String userName = "Test";
         cacheDao.cacheClient = AppConstants.CACHE_APACHE_IGNITE;
-        doThrow(new UnableToAddKeyException("Unable to add key")).when(apacheIgniteClient).saveOrUpdate(userId,userName);
-        assertThrows(UnableToAddKeyException.class,()->cacheDao.saveOrUpdate(userId,userName));
+        doThrow(new UnableToAddKeyException("Unable to add key")).when(apacheIgniteClient).saveOrUpdate(new CacheMap(userId,userName,30L));
+        assertThrows(UnableToAddKeyException.class,()->cacheDao.saveOrUpdate(new CacheMap(userId,userName,30L)));
     }
 
     @Test
@@ -135,17 +136,17 @@ public class CacheDaoTest {
         String userId = "test456";
         String userName = "Test";
         cacheDao.cacheClient = AppConstants.CACHE_REDIS;
-        cacheDao.saveOrUpdate(userId, userName);
-        verify(apacheIgniteClient, never()).saveOrUpdate(userId, userName);
-        verify(redisClient, times(1)).saveOrUpdate(userId, userName);
+        cacheDao.saveOrUpdate(new CacheMap(userId, userName,30l));
+        verify(apacheIgniteClient, never()).saveOrUpdate(new CacheMap(userId, userName,30L));
+        verify(redisClient, times(1)).saveOrUpdate(new CacheMap(userId, userName,30L));
     }
     @Test
     public void testSaveOrUpdate_Redis_Failure(){
         String userId = "test456";
         String userName = "Test";
         cacheDao.cacheClient = AppConstants.CACHE_REDIS;
-        doThrow(new UnableToAddKeyException("Unable to add key")).when(redisClient).saveOrUpdate(userId,userName);
-        assertThrows(UnableToAddKeyException.class,()->cacheDao.saveOrUpdate(userId,userName));
+        doThrow(new UnableToAddKeyException("Unable to add key")).when(redisClient).saveOrUpdate(new CacheMap(userId,userName,30L));
+        assertThrows(UnableToAddKeyException.class,()->cacheDao.saveOrUpdate(new CacheMap(userId,userName,30L)));
     }
 
     @Test

@@ -27,6 +27,8 @@ public class Response {
                 "status='" + status + '\'' +
                 ", message='" + message + '\'' +
                 ", reason='" + reason + '\'' +
+                ", key='" + key + '\'' +
+                ", value='" + value + '\'' +
                 '}';
     }
 }

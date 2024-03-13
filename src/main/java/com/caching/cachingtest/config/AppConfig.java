@@ -30,7 +30,6 @@ public class AppConfig {
     String redisBaseUrl;
 
 
-    String CACHE_NAME = "Users";
 
     /* Method to create and start Apache Ignite Caching Client */
     @Bean

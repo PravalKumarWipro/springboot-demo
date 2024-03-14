@@ -14,7 +14,7 @@ services:
     environment:
       REDIS_URL: redis://redis:6379
       IGNITE_URL: ignite:10800
-      CACHE_CLIENT: APACHE_IGNITE
+      CACHE_CLIENT: ${CACHE_VALUE}
 
     ports:
       - 7070:7070

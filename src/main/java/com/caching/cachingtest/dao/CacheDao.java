@@ -50,9 +50,6 @@ public class CacheDao {
     /* Saves or updates a value in the cache with the given key and value */
     public void saveOrUpdate(CacheMap cacheMap) {
         try {
-            if(cacheMap.getTtl() != null && cacheMap.getTtl() < 0){
-                throw new InvalidTTLException("invalid TTL");
-            }
             getClient().saveOrUpdate(cacheMap);
             logger.info("Added key :  " + cacheMap.getKey() + " into cache " + cacheClient);
         } catch (UnableToAddKeyException e) {

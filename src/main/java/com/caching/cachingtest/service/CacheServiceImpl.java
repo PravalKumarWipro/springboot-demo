@@ -2,6 +2,7 @@ package com.caching.cachingtest.service;
 
 import com.caching.cachingtest.dao.CacheDao;
 import com.caching.cachingtest.exception.CacheNotFoundException;
+import com.caching.cachingtest.exception.InvalidTTLException;
 import com.caching.cachingtest.exception.UnableToAddKeyException;
 import com.caching.cachingtest.model.CacheMap;
 import org.slf4j.Logger;
@@ -53,6 +54,9 @@ public class CacheServiceImpl implements CacheService {
     /* Saves or updates a value in the cache with the given key and value*/
     @Override
     public void saveOrUpdate(CacheMap cacheMap) throws UnableToAddKeyException {
+        if(cacheMap.getTtl() != null && cacheMap.getTtl() < 0){
+            throw new InvalidTTLException("invalid TTL");
+        }
         try {
             cacheDao.saveOrUpdate(cacheMap);
             logger.info("added key :: " + cacheMap.getKey()+" \t data :: "+cacheMap);

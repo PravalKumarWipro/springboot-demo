@@ -71,7 +71,7 @@ public class CacheController {
     public Response addKey(@RequestBody CacheMap cacheMap) {
         Response response = new Response(AppConstants.SUCCESS);
         try {
-            if (cacheMap.getTtl() == null || cacheMap.getTtl() == 0) {
+            if (cacheMap.getTtl() == null) {
                 cacheMap.setTtl(Long.MAX_VALUE);
             }
             userServiceImpl.saveOrUpdate(cacheMap);

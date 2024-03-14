@@ -54,8 +54,8 @@ public class CacheServiceImpl implements CacheService {
     /* Saves or updates a value in the cache with the given key and value*/
     @Override
     public void saveOrUpdate(CacheMap cacheMap) throws UnableToAddKeyException {
-        if(cacheMap.getTtl() != null && cacheMap.getTtl() < 0){
-            throw new InvalidTTLException("invalid TTL");
+        if(cacheMap.getTtl() != null && cacheMap.getTtl() <= 0){
+            throw new InvalidTTLException("invalid ttl, ttl should be greater than 0");
         }
         try {
             cacheDao.saveOrUpdate(cacheMap);

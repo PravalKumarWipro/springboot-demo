@@ -25,7 +25,7 @@ public class CacheServiceImpl implements CacheService {
             logger.info("searching with key :: " + key + ", response received from cache :: " + value);
             if (value == null || value.length() == 0) {
                 logger.error("key " + key + " Not Found");
-                throw new CacheNotFoundException("key " + key + " Not Found");
+                throw new CacheNotFoundException("key : " + key + " Not Found");
             }
             return value;
         } catch (CacheNotFoundException e) {
@@ -42,7 +42,7 @@ public class CacheServiceImpl implements CacheService {
             logger.info("deleting key :: " + key + ", response received from cache :: " + status);
             if (!status) {
                 logger.error("key " + key + " NotFound");
-                throw new CacheNotFoundException("key " + key + " NotFound");
+                throw new CacheNotFoundException("key : " + key + " NotFound");
             }
         } catch (CacheNotFoundException e) {
             logger.error("Cache not found: " + e.getMessage());
@@ -58,7 +58,7 @@ public class CacheServiceImpl implements CacheService {
             logger.info("added key :: " + cacheMap.getKey()+" \t data :: "+cacheMap);
         } catch (Exception e) {
             logger.error("key" + cacheMap.getKey() + " Unable To Save");
-            throw new UnableToAddKeyException("key" + cacheMap.getKey() + " Unable To Save");
+            throw new UnableToAddKeyException("key : " + cacheMap.getKey() + " Unable To Save");
         }
     }
 }

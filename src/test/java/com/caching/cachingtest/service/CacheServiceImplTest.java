@@ -2,6 +2,7 @@ package com.caching.cachingtest.service;
 
 import com.caching.cachingtest.dao.CacheDao;
 import com.caching.cachingtest.exception.CacheNotFoundException;
+import com.caching.cachingtest.exception.InvalidTTLException;
 import com.caching.cachingtest.exception.UnableToAddKeyException;
 import com.caching.cachingtest.model.CacheMap;
 import org.junit.Test;
@@ -79,4 +80,19 @@ public class CacheServiceImplTest {
         Mockito.doThrow(new RuntimeException()).when(cacheDao).saveOrUpdate(new CacheMap(key, value,30L));
         assertThrows(UnableToAddKeyException.class, () -> userServiceImpl.saveOrUpdate(new CacheMap(key, value,30L)));
     }
+    @Test(expected = InvalidTTLException.class)
+    public void testSaveOrUpdate_Failure_NegativeTtl() {
+        String key = "Test123";
+        String value = "Test";
+        long ttl = -1l;
+        userServiceImpl.saveOrUpdate(new CacheMap(key,value,ttl));
+    }
+    @Test(expected = InvalidTTLException.class)
+    public void testSaveOrUpdate_Failure_ZeroTtl() {
+        String key = "Test123";
+        String value = "Test";
+        long ttl = 0l;
+        userServiceImpl.saveOrUpdate(new CacheMap(key,value,ttl));
+    }
+
 }

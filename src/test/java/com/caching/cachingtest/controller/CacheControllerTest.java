@@ -117,20 +117,6 @@ public class CacheControllerTest {
         assertEquals(expectedResponse.getStatus(), response.getStatus());
         assertEquals(expectedResponse.getMessage(), response.getMessage());
     }
-
-    @Test
-    public void testAddKey_Success_TtlEmpty()  {
-        CacheMap cacheMap = new CacheMap();
-        cacheMap.setKey("01");
-        cacheMap.setValue("data");
-        cacheMap.setTtl(0L);
-        Response expectedResponse = new Response(AppConstants.SUCCESS);
-        expectedResponse.setMessage("key " + cacheMap.getKey() + " added");
-        doNothing().when(userServiceImpl).saveOrUpdate(cacheMap);
-        Response response = cacheController.addKey(cacheMap);
-        assertEquals(expectedResponse.getStatus(), response.getStatus());
-        assertEquals(expectedResponse.getMessage(), response.getMessage());
-    }
     @Test
     public void testAddKey_Failure(){
         String invalidKey = "-1";

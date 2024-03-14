@@ -28,7 +28,6 @@ public class CacheControllerTest {
     @Mock
     public CacheDao cacheDao;
 
-
     @Test
     public void testApiIgnite_Success() {
         Mockito.when(cacheDao.getClient()).thenReturn(new ApacheIgniteClient());
@@ -91,13 +90,12 @@ public class CacheControllerTest {
         Response responseEntity = cacheController.deleteKey(invalidKey);
         assertEquals("Error occurred : "+errorMessage,responseEntity.getMessage());
     }
-
     @Test
-    public void testAddKey_noTTL_Success()  {
-        String key1 = "Test123";
+    public void testAddKey_Success()  {
         CacheMap cacheMap = new CacheMap();
         cacheMap.setKey("01");
         cacheMap.setValue("data");
+        cacheMap.setTtl(10L);
         Response expectedResponse = new Response(AppConstants.SUCCESS);
         expectedResponse.setMessage("key " + cacheMap.getKey() + " added");
         doNothing().when(userServiceImpl).saveOrUpdate(cacheMap);
@@ -105,13 +103,27 @@ public class CacheControllerTest {
         assertEquals(expectedResponse.getStatus(), response.getStatus());
         assertEquals(expectedResponse.getMessage(), response.getMessage());
     }
+
     @Test
-    public void testAddKey_Success()  {
-        String key1 = "Test123";
+    public void testAddKey_Success_TtlNull()  {
         CacheMap cacheMap = new CacheMap();
         cacheMap.setKey("01");
         cacheMap.setValue("data");
-        cacheMap.setTtl(10L);
+        cacheMap.setTtl(null);
+        Response expectedResponse = new Response(AppConstants.SUCCESS);
+        expectedResponse.setMessage("key " + cacheMap.getKey() + " added");
+        doNothing().when(userServiceImpl).saveOrUpdate(cacheMap);
+        Response response = cacheController.addKey(cacheMap);
+        assertEquals(expectedResponse.getStatus(), response.getStatus());
+        assertEquals(expectedResponse.getMessage(), response.getMessage());
+    }
+
+    @Test
+    public void testAddKey_Success_TtlEmpty()  {
+        CacheMap cacheMap = new CacheMap();
+        cacheMap.setKey("01");
+        cacheMap.setValue("data");
+        cacheMap.setTtl(0L);
         Response expectedResponse = new Response(AppConstants.SUCCESS);
         expectedResponse.setMessage("key " + cacheMap.getKey() + " added");
         doNothing().when(userServiceImpl).saveOrUpdate(cacheMap);
@@ -124,7 +136,7 @@ public class CacheControllerTest {
         String invalidKey = "-1";
         String invalidValue = "invalidValue";
         String errorMessage = "Unable to save key";
-        Mockito.doThrow(new RuntimeException(errorMessage)).when(userServiceImpl).saveOrUpdate(new CacheMap());
+        Mockito.doThrow(new RuntimeException(errorMessage)).when(userServiceImpl).saveOrUpdate(new CacheMap(invalidKey, invalidValue,30L));
         Response actualResponse = cacheController.addKey(new CacheMap(invalidKey, invalidValue,30L));
         assertEquals("Error occurred : " + errorMessage, actualResponse.getMessage());
     }

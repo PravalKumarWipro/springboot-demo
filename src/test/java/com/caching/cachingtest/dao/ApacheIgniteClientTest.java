@@ -1,5 +1,6 @@
 package com.caching.cachingtest.dao;
 
+import com.caching.cachingtest.exception.KeyExistsException;
 import com.caching.cachingtest.model.CacheMap;
 import org.apache.ignite.client.ClientCache;
 import org.apache.ignite.client.IgniteClient;
@@ -74,9 +75,21 @@ public class ApacheIgniteClientTest {
     }
     @Test
     public void testSaveOrUpdate_Failure(){
-        String key="Test123";
-        String expectedvalue="Test";
-        when(igniteClient.getOrCreateCache(cacheName)).thenThrow(new RuntimeException("Error while saving/updating the value for key"));
-        Assert.assertThrows(RuntimeException.class,()->apacheIgniteClient.saveOrUpdate(new CacheMap(key,expectedvalue,30L)));
+        CacheMap cacheMap = new CacheMap("Test123", "Test", 30l);
+        doReturn(clientCache).when(igniteClient).getOrCreateCache(cacheName);
+        doReturn(clientCache).when(clientCache).withExpirePolicy(any());
+        when(clientCache.get(cacheMap.getKey())).thenReturn(null);
+        doThrow(new RuntimeException("Error while saving/updating the value for key")).when(clientCache).put(cacheMap.getKey(),cacheMap.getValue());
+        //when(clientCache.put(cacheMap.getKey(),cacheMap.getValue())).thenThrow(new RuntimeException("Error while saving/updating the value for key"));
+        Assert.assertThrows(RuntimeException.class, () -> apacheIgniteClient.saveOrUpdate(cacheMap));
     }
+    @Test
+    public void testSaveOrUpdate_KeyExistsException(){
+        CacheMap existingCacheMap = new CacheMap("existingKey", "existingValue", 30l);
+        doReturn(clientCache).when(igniteClient).getOrCreateCache(cacheName);
+        doReturn(clientCache).when(clientCache).withExpirePolicy(any());
+        when(clientCache.get(existingCacheMap.getKey())).thenReturn("existingValue");
+        Assert.assertThrows(KeyExistsException.class, () -> apacheIgniteClient.saveOrUpdate(existingCacheMap));
+    }
+
 }

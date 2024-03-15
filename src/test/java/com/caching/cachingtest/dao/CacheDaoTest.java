@@ -3,6 +3,7 @@ package com.caching.cachingtest.dao;
 
 import com.caching.cachingtest.AppConstants;
 import com.caching.cachingtest.exception.CacheNotFoundException;
+import com.caching.cachingtest.exception.KeyExistsException;
 import com.caching.cachingtest.exception.UnableToAddKeyException;
 import com.caching.cachingtest.model.CacheMap;
 import org.junit.Assert;
@@ -130,6 +131,13 @@ public class CacheDaoTest {
         doThrow(new UnableToAddKeyException("Unable to add key")).when(apacheIgniteClient).saveOrUpdate(new CacheMap(userId,userName,30L));
         assertThrows(UnableToAddKeyException.class,()->cacheDao.saveOrUpdate(new CacheMap(userId,userName,30L)));
     }
+    @Test
+    public void testSaveOrUpdate_ApacheIgnite_KeyExistsException(){
+        CacheMap existingCacheMap = new CacheMap("existingKey", "existingValue", 30l);
+        cacheDao.cacheClient = AppConstants.CACHE_APACHE_IGNITE;
+        doThrow(new KeyExistsException("key already existing in cache")).when(apacheIgniteClient).saveOrUpdate(existingCacheMap);
+        assertThrows(KeyExistsException.class,()->cacheDao.saveOrUpdate(existingCacheMap));
+    }
 
     @Test
     public void testSaveOrUpdate_Redis_Success() {
@@ -147,6 +155,14 @@ public class CacheDaoTest {
         cacheDao.cacheClient = AppConstants.CACHE_REDIS;
         doThrow(new UnableToAddKeyException("Unable to add key")).when(redisClient).saveOrUpdate(new CacheMap(userId,userName,30L));
         assertThrows(UnableToAddKeyException.class,()->cacheDao.saveOrUpdate(new CacheMap(userId,userName,30L)));
+    }
+
+    @Test
+    public void testSaveOrUpdate_Redis_KeyExistsException(){
+        CacheMap existingCacheMap = new CacheMap("existingKey", "existingValue", 30l);
+        cacheDao.cacheClient = AppConstants.CACHE_REDIS;
+        doThrow(new KeyExistsException("key already existing in cache")).when(redisClient).saveOrUpdate(existingCacheMap);
+        assertThrows(KeyExistsException.class,()->cacheDao.saveOrUpdate(existingCacheMap));
     }
 
     @Test

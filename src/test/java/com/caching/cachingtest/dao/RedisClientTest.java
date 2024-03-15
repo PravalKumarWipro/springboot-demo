@@ -1,6 +1,7 @@
 package com.caching.cachingtest.dao;
 
 import com.caching.cachingtest.exception.CacheNotFoundException;
+import com.caching.cachingtest.exception.KeyExistsException;
 import com.caching.cachingtest.model.CacheMap;
 import org.junit.Assert;
 import org.junit.Test;
@@ -93,5 +94,12 @@ public class RedisClientTest {
             when(redissonClient.getMapCache(cacheName)).thenThrow(new CacheNotFoundException("Error while saving or updating cache"));
             Assert.assertThrows(CacheNotFoundException.class,()->redisClient.saveOrUpdate(new CacheMap(userId,userName,30L)));
         }
+    @Test
+    public void testSaveOrUpdate_KeyExistsException(){
+        CacheMap existingCacheMap = new CacheMap("existingKey", "existingValue", 30l);
+        doReturn(userCache).when(redissonClient).getMapCache(cacheName);
+        when(userCache.get(existingCacheMap.getKey())).thenReturn("existingValue");
+        Assert.assertThrows(KeyExistsException.class, () -> redisClient.saveOrUpdate(existingCacheMap));
+    }
 }
 

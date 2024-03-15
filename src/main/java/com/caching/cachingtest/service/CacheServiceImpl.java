@@ -3,6 +3,7 @@ package com.caching.cachingtest.service;
 import com.caching.cachingtest.dao.CacheDao;
 import com.caching.cachingtest.exception.CacheNotFoundException;
 import com.caching.cachingtest.exception.InvalidTTLException;
+import com.caching.cachingtest.exception.KeyExistsException;
 import com.caching.cachingtest.exception.UnableToAddKeyException;
 import com.caching.cachingtest.model.CacheMap;
 import org.slf4j.Logger;
@@ -60,8 +61,11 @@ public class CacheServiceImpl implements CacheService {
         try {
             cacheDao.saveOrUpdate(cacheMap);
             logger.info("added key :: " + cacheMap.getKey()+" \t data :: "+cacheMap);
-        } catch (Exception e) {
-            logger.error("key" + cacheMap.getKey() + " Unable To Save");
+        }catch (KeyExistsException keyExistsException){
+            logger.error("key  " + cacheMap.getKey() + "already existing in cache ");
+            throw  keyExistsException;
+        }catch (Exception e) {
+            logger.error("key : " + cacheMap.getKey() + " Unable To Save");
             throw new UnableToAddKeyException("key" + cacheMap.getKey() + " Unable To Save");
         }
     }

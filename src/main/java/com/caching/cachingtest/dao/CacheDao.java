@@ -2,6 +2,7 @@ package com.caching.cachingtest.dao;
 
 import com.caching.cachingtest.AppConstants;
 import com.caching.cachingtest.exception.CacheNotFoundException;
+import com.caching.cachingtest.exception.KeyExistsException;
 import com.caching.cachingtest.exception.UnableToAddKeyException;
 import com.caching.cachingtest.model.CacheMap;
 import org.slf4j.Logger;
@@ -51,7 +52,10 @@ public class CacheDao {
         try {
             getClient().saveOrUpdate(cacheMap);
             logger.info("Added key :  " + cacheMap.getKey() + " into cache " + cacheClient);
-        } catch (UnableToAddKeyException e) {
+        }catch (KeyExistsException keyExistsException){
+            logger.error("key  " + cacheMap.getKey() + "already existing in cache " + cacheClient);
+            throw  keyExistsException;
+        }catch (UnableToAddKeyException e) {
             logger.error("Unable to add key  " + cacheMap.getKey() + "to cache " + cacheClient);
             throw e;
         }

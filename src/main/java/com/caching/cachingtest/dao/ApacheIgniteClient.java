@@ -1,5 +1,6 @@
 package com.caching.cachingtest.dao;
 
+import com.caching.cachingtest.exception.KeyExistsException;
 import com.caching.cachingtest.model.CacheMap;
 import org.apache.ignite.client.ClientCache;
 import org.apache.ignite.client.IgniteClient;
@@ -53,8 +54,13 @@ public class ApacheIgniteClient implements GenericCacheClient {
 
     /* Saves or updates the value associated with the given key in the cache */
     public void saveOrUpdate(CacheMap cacheMap) {
+        ClientCache<String, String> clientCache = igniteClient.getOrCreateCache(cacheName).withExpirePolicy(new CreatedExpiryPolicy(new Duration(TimeUnit.SECONDS, cacheMap.getTtl())));
+        logger.info("APACHE IGNITE >>>trying to added user with key :: " + cacheMap.getKey());
+        String existingValue = clientCache.get(cacheMap.getKey());
+        if(existingValue !=null){
+            throw new KeyExistsException("Key : "+cacheMap.getKey()+" Exists");
+        }
         try {
-            ClientCache<String, String> clientCache = igniteClient.getOrCreateCache(cacheName).withExpirePolicy(new CreatedExpiryPolicy(new Duration(TimeUnit.SECONDS, cacheMap.getTtl())));
             logger.info("APACHE IGNITE >>> added user with key :: " + cacheMap.getKey());
             clientCache.put(cacheMap.getKey(), cacheMap.getValue());
         } catch (Exception e) {

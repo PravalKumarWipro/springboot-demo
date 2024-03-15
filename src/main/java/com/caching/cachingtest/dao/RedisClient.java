@@ -1,6 +1,7 @@
 package com.caching.cachingtest.dao;
 
 import com.caching.cachingtest.exception.CacheNotFoundException;
+import com.caching.cachingtest.exception.KeyExistsException;
 import com.caching.cachingtest.model.CacheMap;
 import org.redisson.api.RMapCache;
 import org.redisson.api.RedissonClient;
@@ -56,6 +57,11 @@ public class RedisClient implements GenericCacheClient {
     public void saveOrUpdate(CacheMap cacheMap) {
        try {
            RMapCache<String, String> userCache = redissonClient.getMapCache(cacheName);
+           logger.info("REDIS >>> trying to added user with key :: " + cacheMap.getKey());
+           String existingValue = userCache.get(cacheMap.getKey());
+           if(existingValue !=null){
+               throw new KeyExistsException("Key : "+cacheMap.getKey()+" Exists");
+           }
            logger.info("REDIS >>> added user with key :: " + cacheMap.getKey());
            userCache.put(String.valueOf(cacheMap.getKey()), cacheMap.getValue(), cacheMap.getTtl(), TimeUnit.SECONDS);
        }catch(Exception e){

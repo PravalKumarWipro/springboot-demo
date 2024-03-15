@@ -58,7 +58,7 @@ public class ApacheIgniteClient implements GenericCacheClient {
         logger.info("APACHE IGNITE >>>trying to added user with key :: " + cacheMap.getKey());
         String existingValue = clientCache.get(cacheMap.getKey());
         if(existingValue !=null){
-            throw new KeyExistsException("Key : "+cacheMap.getKey()+" Exists");
+            throw new KeyExistsException("key "+cacheMap.getKey()+" already exists, cannot continue!");
         }
         try {
             logger.info("APACHE IGNITE >>> added user with key :: " + cacheMap.getKey());

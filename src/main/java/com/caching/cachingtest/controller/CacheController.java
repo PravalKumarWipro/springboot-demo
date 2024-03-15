@@ -2,6 +2,8 @@ package com.caching.cachingtest.controller;
 
 import com.caching.cachingtest.AppConstants;
 import com.caching.cachingtest.dao.CacheDao;
+import com.caching.cachingtest.exception.InvalidTTLException;
+import com.caching.cachingtest.exception.KeyExistsException;
 import com.caching.cachingtest.model.CacheMap;
 import com.caching.cachingtest.model.Response;
 import com.caching.cachingtest.service.CacheServiceImpl;
@@ -79,7 +81,13 @@ public class CacheController {
             response.setValue(cacheMap.getValue());
             response.setMessage("key " + cacheMap.getKey() + " added");
             logger.info("Key " + cacheMap.getKey() + " added/Updated");
-        } catch (Exception e) {
+        }catch (KeyExistsException keyExistsException){
+            logger.error("key  " + cacheMap.getKey() + "already existing in cache ");
+            response.setMessage(keyExistsException.getMessage());
+        }catch (InvalidTTLException invalidTTLException){
+            logger.error("key  " + cacheMap.getKey() + "invalid ttl");
+            response.setMessage(invalidTTLException.getMessage());
+        }catch (Exception e) {
             logger.error("Error while adding a key");
             response.setMessage("Error occurred : " + e.getMessage());
         }

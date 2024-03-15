@@ -60,7 +60,7 @@ public class RedisClient implements GenericCacheClient {
            logger.info("REDIS >>> trying to added user with key :: " + cacheMap.getKey());
            String existingValue = userCache.get(cacheMap.getKey());
            if(existingValue !=null){
-               throw new KeyExistsException("Key : "+cacheMap.getKey()+" Exists");
+               throw new KeyExistsException("key "+cacheMap.getKey()+" already exists, cannot continue!");
            }
            logger.info("REDIS >>> added user with key :: " + cacheMap.getKey());
            userCache.put(String.valueOf(cacheMap.getKey()), cacheMap.getValue(), cacheMap.getTtl(), TimeUnit.SECONDS);

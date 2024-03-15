@@ -16,7 +16,7 @@ services:
       REDIS_URL: redis://redis:6379
       IGNITE_URL: ignite:10800
       CACHE_CLIENT: ${CACHE_VALUE}
-
+      CACHE_NAME: ${CACHE_NAME}
     ports:
       - 7070:7070
     depends_on:

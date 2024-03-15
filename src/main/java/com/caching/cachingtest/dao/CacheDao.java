@@ -53,7 +53,6 @@ public class CacheDao {
             getClient().saveOrUpdate(cacheMap);
             logger.info("Added key :  " + cacheMap.getKey() + " into cache " + cacheClient);
         }catch (KeyExistsException keyExistsException){
-            logger.error("key  " + cacheMap.getKey() + "already existing in cache " + cacheClient);
             throw  keyExistsException;
         }catch (UnableToAddKeyException e) {
             logger.error("Unable to add key  " + cacheMap.getKey() + "to cache " + cacheClient);

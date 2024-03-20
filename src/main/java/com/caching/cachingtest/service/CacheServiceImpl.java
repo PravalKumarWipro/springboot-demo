@@ -43,8 +43,8 @@ public class CacheServiceImpl implements CacheService {
             Boolean status = cacheDao.delete(key);
             logger.info("deleting key :: " + key + ", response received from cache :: " + status);
             if (!status) {
-                logger.error("key " + key + " NotFound");
-                throw new CacheNotFoundException("key " + key + " NotFound");
+                logger.error("key " + key + " Not Found");
+                throw new CacheNotFoundException("key " + key + " Not Found");
             }
         } catch (CacheNotFoundException e) {
             logger.error("Cache not found: " + e.getMessage());

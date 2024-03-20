@@ -23,3 +23,11 @@ services:
       - redis
       - ignite
 
+  quarkusclient:
+    container_name: quarkus-client
+    image: quarkus-client
+    environment:
+      BASE_URL: http://cacheservice:7070
+    ports:
+      - 7890:7890
+

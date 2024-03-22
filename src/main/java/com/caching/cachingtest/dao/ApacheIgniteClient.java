@@ -2,8 +2,11 @@ package com.caching.cachingtest.dao;
 
 import com.caching.cachingtest.exception.KeyExistsException;
 import com.caching.cachingtest.model.CacheMap;
+import org.apache.ignite.cache.CacheRebalanceMode;
 import org.apache.ignite.client.ClientCache;
+import org.apache.ignite.client.ClientCacheConfiguration;
 import org.apache.ignite.client.IgniteClient;
+import org.apache.ignite.configuration.CacheConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +57,11 @@ public class ApacheIgniteClient implements GenericCacheClient {
 
     /* Saves or updates the value associated with the given key in the cache */
     public void saveOrUpdate(CacheMap cacheMap) {
-        ClientCache<String, String> clientCache = igniteClient.getOrCreateCache(cacheName).withExpirePolicy(new CreatedExpiryPolicy(new Duration(TimeUnit.SECONDS, cacheMap.getTtl())));
+        ClientCacheConfiguration cacheConfiguration = new ClientCacheConfiguration();
+        cacheConfiguration.setName(cacheName);
+        cacheConfiguration.setRebalanceMode(CacheRebalanceMode.SYNC);
+        ClientCache<String, String> clientCache = igniteClient.getOrCreateCache(cacheConfiguration).withExpirePolicy(new CreatedExpiryPolicy(new Duration(TimeUnit.SECONDS, cacheMap.getTtl())));
+        clientCache.getConfiguration();
         logger.info("APACHE IGNITE >>>trying to added user with key :: " + cacheMap.getKey());
         String existingValue = clientCache.get(cacheMap.getKey());
         if(existingValue !=null){

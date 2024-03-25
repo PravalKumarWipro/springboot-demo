@@ -28,6 +28,9 @@ public class ApacheIgniteClient implements GenericCacheClient {
     @Value("${cache.name:Cache}")
     String cacheName;
 
+    @Value("${cache.rebalance.mode:SYNC}")
+    String cacheRebalanceMode;
+
 
    /*  Retrieves the value associated with the given key from the cache  */
     public String getValueById(String key) {
@@ -59,7 +62,9 @@ public class ApacheIgniteClient implements GenericCacheClient {
     public void saveOrUpdate(CacheMap cacheMap) {
         ClientCacheConfiguration cacheConfiguration = new ClientCacheConfiguration();
         cacheConfiguration.setName(cacheName);
-        cacheConfiguration.setRebalanceMode(CacheRebalanceMode.SYNC);
+        CacheRebalanceMode cacheRebalanceMode = getCacheRebalanceingModeFromConfig();
+        cacheConfiguration.setRebalanceMode(cacheRebalanceMode);
+        logger.info("Cache Client ::: APACHE IGNITE \t Rebalancing Mode ::: "+cacheRebalanceMode+"\t Cache Name ::"+cacheName);
         ClientCache<String, String> clientCache = igniteClient.getOrCreateCache(cacheConfiguration).withExpirePolicy(new CreatedExpiryPolicy(new Duration(TimeUnit.SECONDS, cacheMap.getTtl())));
         clientCache.getConfiguration();
         logger.info("APACHE IGNITE >>>trying to added user with key :: " + cacheMap.getKey());
@@ -79,6 +84,18 @@ public class ApacheIgniteClient implements GenericCacheClient {
     @Override
     public String toString() {
         return "ApacheIgniteClient";
+    }
+
+    public CacheRebalanceMode getCacheRebalanceingModeFromConfig(){
+        CacheRebalanceMode finalCacheRebalanceMode = CacheRebalanceMode.SYNC;
+        if(cacheRebalanceMode.equals("SYNC")){
+            finalCacheRebalanceMode =  CacheRebalanceMode.SYNC;
+        }else if(cacheRebalanceMode.equals("ASYNC")){
+            finalCacheRebalanceMode =  CacheRebalanceMode.ASYNC;
+        }else if(cacheRebalanceMode.equals("NONE")){
+            finalCacheRebalanceMode =  CacheRebalanceMode.NONE;
+        }
+        return finalCacheRebalanceMode;
     }
 
 }

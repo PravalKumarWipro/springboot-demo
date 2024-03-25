@@ -1,6 +1,7 @@
 package com.caching.cachingtest.controller;
 
 import com.caching.cachingtest.AppConstants;
+import com.caching.cachingtest.dao.ApacheIgniteClient;
 import com.caching.cachingtest.dao.CacheDao;
 import com.caching.cachingtest.exception.InvalidTTLException;
 import com.caching.cachingtest.exception.KeyExistsException;
@@ -24,6 +25,9 @@ public class CacheController {
     @Autowired
     private CacheDao cacheDao;
 
+    @Autowired
+    private ApacheIgniteClient apacheIgniteClient;
+
     private static final Logger logger = LoggerFactory.getLogger(CacheController.class);
 
     /* Endpoint to test the Client */
@@ -31,7 +35,11 @@ public class CacheController {
     public ResponseEntity<Response> testApi() {
         Response response = new Response(AppConstants.SUCCESS);
         try {
-            response.setMessage("Cache Client :: " + cacheDao.getClient());
+            if(cacheDao.getClient() instanceof ApacheIgniteClient){
+                response.setMessage("Cache Client :: " + cacheDao.getClient()+"  -   RebalancingMode :: "+apacheIgniteClient.getCacheRebalanceingModeFromConfig());
+            }else{
+                response.setMessage("Cache Client :: " + cacheDao.getClient());
+            }
             logger.info("Cache Client : " + cacheDao.getClient());
             return new ResponseEntity<Response>(response, HttpStatus.OK);
         } catch (Exception e) {

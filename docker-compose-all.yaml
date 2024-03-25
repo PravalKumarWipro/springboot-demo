@@ -17,6 +17,7 @@ services:
       IGNITE_URL: ignite:10800
       CACHE_CLIENT: ${CACHE_VALUE}
       CACHE_NAME: ${CACHE_NAME}
+      CACHE_REBALANCE_MODE: ${CACHE_REBALANCE_MODE}
     ports:
       - 7070:7070
     depends_on:

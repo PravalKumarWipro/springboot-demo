@@ -77,7 +77,10 @@ public class ApacheIgniteClientTest {
     @Test
     public void testSaveOrUpdate_Failure(){
         CacheMap cacheMap = new CacheMap("Test123", "Test", 30l);
-        //when(clientCache.put(cacheMap.getKey(),cacheMap.getValue())).thenThrow(new RuntimeException("Error while saving/updating the value for key"));
+        doReturn(clientCache).when(igniteClient).getOrCreateCache(any(ClientCacheConfiguration.class));
+        doReturn(clientCache).when(clientCache).withExpirePolicy(any());
+        when(clientCache.get(cacheMap.getKey())).thenReturn(null);
+        doThrow(new RuntimeException("Error while saving/updating the value for key")).when(clientCache).put(cacheMap.getKey(),cacheMap.getValue());
         Assert.assertThrows(RuntimeException.class, () -> apacheIgniteClient.saveOrUpdate(cacheMap));
     }
     @Test

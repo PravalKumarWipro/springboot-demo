@@ -50,8 +50,10 @@ public class CacheDao {
     /* Saves or updates a value in the cache with the given key and value */
     public void saveOrUpdate(CacheMap cacheMap) {
         try {
-            getClient().saveOrUpdate(cacheMap);
-            logger.info("Added key :  " + cacheMap.getKey() + " into cache " + cacheClient);
+            synchronized (this){
+                getClient().saveOrUpdate(cacheMap);
+                logger.info("Added key :  " + cacheMap.getKey() + " into cache " + cacheClient);
+            }
         }catch (KeyExistsException keyExistsException){
             throw  keyExistsException;
         }catch (UnableToAddKeyException e) {

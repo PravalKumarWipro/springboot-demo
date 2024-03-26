@@ -6,14 +6,12 @@ import org.apache.ignite.cache.CacheRebalanceMode;
 import org.apache.ignite.client.ClientCache;
 import org.apache.ignite.client.ClientCacheConfiguration;
 import org.apache.ignite.client.IgniteClient;
-import org.apache.ignite.configuration.CacheConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.cache.expiry.CreatedExpiryPolicy;
 import javax.cache.expiry.Duration;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +23,7 @@ public class ApacheIgniteClient implements GenericCacheClient {
 
     @Autowired
     IgniteClient igniteClient;
+
     @Value("${cache.name:Cache}")
     String cacheName;
 
@@ -87,15 +86,21 @@ public class ApacheIgniteClient implements GenericCacheClient {
     }
 
     public CacheRebalanceMode getCacheRebalanceingModeFromConfig(){
-        CacheRebalanceMode finalCacheRebalanceMode = CacheRebalanceMode.SYNC;
-        if(cacheRebalanceMode.equals("SYNC")){
-            finalCacheRebalanceMode =  CacheRebalanceMode.SYNC;
-        }else if(cacheRebalanceMode.equals("ASYNC")){
-            finalCacheRebalanceMode =  CacheRebalanceMode.ASYNC;
-        }else if(cacheRebalanceMode.equals("NONE")){
-            finalCacheRebalanceMode =  CacheRebalanceMode.NONE;
+        CacheRebalanceMode finalCacheRebalanceMode = null;
+        switch(cacheRebalanceMode){
+            case "SYNC":
+                finalCacheRebalanceMode =  CacheRebalanceMode.SYNC;
+                break;
+            case "ASYNC":
+                finalCacheRebalanceMode =  CacheRebalanceMode.ASYNC;
+                break;
+            case "NONE":
+                finalCacheRebalanceMode =  CacheRebalanceMode.NONE;
+                break;
+            default:
+                finalCacheRebalanceMode =  CacheRebalanceMode.SYNC;
+                break;
         }
         return finalCacheRebalanceMode;
     }
-
 }

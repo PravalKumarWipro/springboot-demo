@@ -27,15 +27,16 @@ public class CacheControllerTest {
     private CacheController cacheController;
     @Mock
     public CacheServiceImpl userServiceImpl;
-
     @Mock
     public CacheDao cacheDao;
+    @Mock
+    public ApacheIgniteClient apacheIgniteClient;
 
     @Test
     public void testApiIgnite_Success() {
-        Mockito.when(cacheDao.getClient()).thenReturn(new ApacheIgniteClient());
+        Mockito.when(cacheDao.getClient()).thenReturn(apacheIgniteClient);
         ResponseEntity<Response> response = cacheController.testApi();
-        assertEquals("Cache Client :: ApacheIgniteClient", response.getBody().getMessage());
+        assertEquals("Cache Client :: apacheIgniteClient  -   RebalancingMode :: null", response.getBody().getMessage());
     }
     @Test
     public void testApiIgnite_Failure(){

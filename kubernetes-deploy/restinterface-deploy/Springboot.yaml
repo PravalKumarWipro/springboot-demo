@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-app
+  namespace: springboot-gridgain
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      bb: web
+  template:
+    metadata:
+      labels:
+        bb: web
+    spec:
+      containers:
+      - name: bb-site
+        image: europe-west2-docker.pkg.dev/lbg-coe/demo-repo/springboot-cache-image:grid-gain-integration
+        env:
+        - name: REDIS_URL
+          #value: "redis://caching:6379"
+          value: "redis://redis-service:6379"
+        - name: IGNITE_URL
+          value: "gridgain-service.gridgain.svc.cluster.local:10800"
+         # value: "apache-ignite-service:10800" 
+        - name: CACHE_CLIENT
+          value: "APACHE-IGNITE"
+        - name: CACHE_NAME
+          value: "myReplicatedCache"
+       #   value: "REDIS"
+       # - name: UNLEASHURL
+       #   value: "http://unleash-web:4242/"
+       # - name: CACHE_VALUE
+       #   value: "REDIS"
+       # - name: TOKEN
+       #   value: "c264c3dec7e3ed2fd3ecdac5b9e2ff4c337c44e0670e05e3c53ea93e"
+        ports:
+        - containerPort: 7070
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: springboot-service
+  namespace: springboot-gridgain
+spec:
+  type: LoadBalancer
+  selector:
+    bb: web
+  ports:
+  - port: 7070
+    targetPort: 7070
+    #nodePort: 30003
+status:
+  loadBalancer: {}

@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-quarkus-api
+  namespace: gridgain
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - name: springboot-api-site
+        image: europe-west2-docker.pkg.dev/lbg-coe/demo-repo/springboot-cache-image:rebalancing
+        env:
+        - name: REDIS_URL
+          value: "redis://redis-service:6379"
+        - name: IGNITE_URL
+          value: "gridgain-service.gridgain.svc.cluster.local:10800"
+        - name: CACHE_CLIENT
+          value: "APACHE-IGNITE"
+        - name: CACHE_NAME
+          value: "myReplicatedCache"
+        - name: CACHE_REBALANCE_MODE
+          value: "SYNC"
+        ports:
+        - containerPort: 7070
+      - name: quarkus-api-site
+        image: europe-west2-docker.pkg.dev/lbg-coe/demo-repo/quarkus-consumer-image:v2
+        env:
+        - name: BASE_URL
+          value: "http://springboot-api-service:7070"
+        ports:
+        - containerPort: 7890
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: springboot-api-service
+  namespace: gridgain
+spec:
+  type: LoadBalancer
+  selector:
+    app: web
+  ports:
+  - port: 7070
+    targetPort: 7070
+status:
+  loadBalancer: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quarkus-api-service
+  namespace: gridgain
+spec:
+  type: LoadBalancer
+  selector:
+    app: web
+  ports:
+  - port: 7890
+    targetPort: 7890
+status:
+  loadBalancer: {}  

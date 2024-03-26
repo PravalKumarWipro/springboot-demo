@@ -1,0 +1,75 @@
+Pass: unleash4all
+User: unleash
+-------------------------------------------------------------------
+git clone -b unleash-optimization https://github.com/PravalKumarWipro/springboot-demo.git
+---------------------------------------------------------------------
+GCP Account: lbg.coe1@ideasgcpinnovation.com 
+
+-------------------project build------------
+git clone 
+mvn clean package -DskipTests
+sudo docker build  -t  europe-west2-docker.pkg.dev/lbg-coe/demo-repo/springboot-cache-image .
+----------------------------------------------------------------------------------------------
+
+
+https://cloud.google.com/kubernetes-engine/docs/tutorials/hello-app
+------------------Creating a GKE cluste --------------------
+gcloud config set compute/region  europe-west2
+gcloud config set compute/zone europe-west2-b
+gcloud container clusters create demo-cluster \
+    --num-nodes=1 \
+    --release-channel regular
+
+
+--------------------Create a repository ------------------
+
+export PROJECT_ID=lbg-coe
+echo $PROJECT_ID
+gcloud config set project $PROJECT_ID
+
+gcloud artifacts repositories create demo-repo \
+   --repository-format=docker \
+   --location=europe-west2 \
+   --description="Docker repository"
+
+ gcloud artifacts locations list
+
+----------------------------Docker Build ---------------
+git clone https://github.com/GoogleCloudPlatform/kubernetes-engine-samples
+cd kubernetes-engine-samples/quickstarts/hello-app
+docker build -t europe-west2-docker.pkg.dev/${PROJECT_ID}/hello-repo/hello-app:v1 .
+docker images
+
+gcloud artifacts repositories add-iam-policy-binding hello-repo \
+    --location=europe-west2 \
+    --member=serviceAccount:693373143114-compute@developer.gserviceaccount.com \
+    --role="roles/artifactregistry.reader"
+
+-------------------Running your container locally (optional----------------
+docker run --rm -p 8080:8080 europe-west2-docker.pkg.dev/lbg-coe/hello-repo/hello-app:v1
+
+
+---------------Pushing the Docker image to Artifact Registry-------------------
+
+gcloud auth configure-docker europe-west2-docker.pkg.dev
+
+docker push europe-west2-docker.pkg.dev/lbg-coe/hello-repo/hello-app:v1
+
+----------------------Deploying the sample app to GKE---------------------------
+
+gcloud container clusters get-credentials demo-cluster --region europe-west2-b
+kubectl create deployment hello-app --image=europe-west2-docker.pkg.dev/lbg-coe/hello-repo/hello-app:v1
+kubectl scale deployment hello-app --replicas=3
+kubectl autoscale deployment hello-app --cpu-percent=80 --min=1 --max=5
+kubectl get pods
+
+------------------Exposing the sample app to the internet---------------------------
+kubectl expose deployment hello-app --name=hello-app-service --type=LoadBalancer --port 80 --target-port 8080
+kubectl get service
+
+-----------------------Deploying a new version of the sample app------------------------
+docker build -t europe-west2-docker.pkg.dev/${PROJECT_ID}/hello-repo/hello-app:v2 .
+docker push europe-west2-docker.pkg.dev/${PROJECT_ID}/hello-repo/hello-app:v2
+----------------------Deploying new version --------------------------
+kubectl set image deployment/hello-app hello-app=europe-west2-docker.pkg.dev/${PROJECT_ID}/hello-repo/hello-app:v2
+watch kubectl get pods

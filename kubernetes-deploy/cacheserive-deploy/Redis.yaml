@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace:  gridgain
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      bb: redis
+  template:
+    metadata:
+      labels:
+        bb: redis
+    spec:
+      containers:
+      - name: caching-redis
+        image: redis:latest
+        ports:
+        - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  namespace:  gridgain
+spec:
+  type: NodePort
+  selector:
+    bb: redis
+  ports:
+  - name: http1
+    port: 6379
+    targetPort: 6379
+    #nodePort: 30002

@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: gridgainexternalservice
+  namespace: springboot-gridgain
+spec:
+  type: ExternalName
+  externalName: gridgain-service.gridgain.svc.cluster.local
+  ports:
+  - port: 10800
+    protocol: TCP
+    targetPort: 10800

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apacheignite
+  namespace: springboot-gridgain
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      bb: ignite
+  template:
+    metadata:
+      labels:
+        bb: ignite
+    spec:
+      containers:
+      - name: caching-apacheignite
+        image: gridgain/community:8.9.2
+        ports:
+        - containerPort: 10800
+        - containerPort: 8080
+        env:
+        - name: OPTION_LIBS
+          value: "ignite-rest-http"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apache-ignite-service
+  namespace: springboot-gridgain
+spec:
+  #type: NodePort
+  type: LoadBalancer
+  selector:
+    bb: ignite
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  - name: http1
+    port: 10800
+    targetPort: 10800
+   #nodePort: 30011
+status:
+  loadBalancer: {}

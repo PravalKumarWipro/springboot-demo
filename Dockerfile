@@ -8,5 +8,6 @@ RUN mvn -f /home/app/pom.xml clean package
 #
 FROM registry.access.redhat.com/ubi8/openjdk-11 
 COPY --from=build /home/app/target/*.jar /usr/local/lib/app.jar
+COPY --from=build /home/app/target/classes/logback.xml /usr/local/lib/logback.xml
 EXPOSE 7070
 ENTRYPOINT ["java","-jar","/usr/local/lib/app.jar"]

@@ -15,11 +15,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
+import java.util.Arrays;
 
 /* This class contains application configuration settings related to different caching systems */
 @Configuration
 public class AppConfig {
-    private static final Logger logger= LoggerFactory.getLogger(AppConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppConfig.class);
 
     // Config variable for Apache Ignite
     @Value("${ignite.url}")
@@ -31,21 +32,29 @@ public class AppConfig {
 
 
 
-    /* Method to create and start Apache Ignite Caching Client */
+
+    /***
+     * Method to create and start Apache Ignite Caching Client
+     * @return
+     */
     @Bean
     public IgniteClient igniteClient() {
         try {
             ClientConfiguration cfg = new ClientConfiguration().setAddresses(apacheIgniteUrl);
             IgniteClient client = Ignition.startClient(cfg);
-            logger.info("Ignite Client created");
+            LOGGER.info("Ignite Client created");
             return client;
         } catch (Exception e) {
-            logger.error("Error creating Ignite Client: ");
+            LOGGER.error("Error creating Ignite Client: {}\t stacktrace : {}",e.getMessage(), Arrays.toString(e.getStackTrace()));
             throw new RuntimeException("Error creating Ignite Client : " + e.getMessage(), e);
         }
     }
 
-    /* Method to create and start Redis Caching Client */
+
+    /***
+     * Method to create and start Redis Caching Client
+     * @return
+     */
     @Bean(name = "RedissonClient")
     public RedissonClient redisClient() {
         try {
@@ -53,22 +62,11 @@ public class AppConfig {
             config.useSingleServer()
                     .setAddress(redisBaseUrl);
             RedissonClient client = Redisson.create(config);
-            logger.info("Redis Client created");
+            LOGGER.info("Redis Client created");
             return client;
         } catch (Exception e) {
-            logger.error("Error creating Redis Client: ");
+            LOGGER.error("Error creating Redis Client: {}\t stacktrace : {}",e.getMessage(), Arrays.toString(e.getStackTrace()));
             throw new RuntimeException("Error creating Redis Client : " + e.getMessage(), e);
-        }
-    }
-
-    /* RestTemplate builder with ConnectTimeOUT and ReadTimeOut settings*/
-    @Bean
-    public RestTemplate restTemplate() {
-        try {
-            return new RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(3)).setReadTimeout(Duration.ofSeconds(3)).build();
-        } catch (Exception e) {
-            logger.error("Error creating RestTemplate: ");
-            throw new RuntimeException("Error creating RestTemplate: " + e.getMessage(), e);
         }
     }
 }

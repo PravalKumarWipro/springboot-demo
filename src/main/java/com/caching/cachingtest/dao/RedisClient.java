@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /* Interacts with Redis for caching purposes */
@@ -22,50 +23,68 @@ public class RedisClient implements GenericCacheClient {
     @Value("${cache.name:Cache}")
     String cacheName;
 
-    private static final Logger logger= LoggerFactory.getLogger(RedisClient.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RedisClient.class);
 
-    /* Retrieves a value from the Redis cache based on the provided key */
+
+    /***
+     * Retrieves a value from the Redis cache based on the provided key
+     * @param key
+     * @return
+     * @throws CacheNotFoundException
+     */
     public String getValueById(String key) throws CacheNotFoundException {
         try {
+            LOGGER.info("In getValueById() client ::: REDIS searching with key :: {}", key);
             RMapCache<String, String> userCache = redissonClient.getMapCache(cacheName);
             String value = userCache.get(String.valueOf(key));
-            logger.info("REDIS >>> searching user with key :: " + key + ", response received from cache :: " + value);
+            LOGGER.info("In getValueById() client ::: REDIS key :: {} found", key);
             return value;
         }catch(CacheNotFoundException e){
-            logger.error("User not found in cache for key: " + key);
+            LOGGER.error("In getValueById() client :::REDIS Error while searching with key :: {}",key);
             throw e;
         }
     }
 
-    /* Deletes a value from the Redis cache based on the provided key */
+
+
+    /***
+     *  Deletes a value from the Redis cache based on the provided key
+     * @param key
+     * @return
+     */
     public Boolean delete(String key) {
         try {
+            LOGGER.info("In delete() client ::: REDIS deleting the key :: {}", key);
             RMapCache<String, String> userCache = redissonClient.getMapCache(cacheName);
             String respose = userCache.remove(String.valueOf(key));
-            logger.info("REDIS >>> response after deletion :: " + respose);
             if (respose == null) {
                 return false;
             }
+            LOGGER.info("In delete() client ::: REDIS deleting the key :: {} success", key);
             return true;
         }catch(CacheNotFoundException e){
-            logger.error("Error while deleting a key : "+e.getMessage());
+            LOGGER.error("In delete() client ::: REDIS Error while deleting key : {}  from ApacheClient exception : {}, stacktrace : {} ",key, e.getMessage(), Arrays.toString(e.getStackTrace()));
             throw e;
         }
     }
 
-    /* Saves Or Updates key-value to the Redis cache  */
+    /***
+     * Saves Or Updates key-value to the Redis cache
+     * @param cacheMap
+     */
     public void saveOrUpdate(CacheMap cacheMap) {
        try {
            RMapCache<String, String> userCache = redissonClient.getMapCache(cacheName);
-           logger.info("REDIS >>> trying to added user with key :: " + cacheMap.getKey());
+           LOGGER.info("In saveOrUpdate() client ::: REDIS  Cache Name :: {} trying  adding the key :: {}", cacheName, cacheMap.getKey());
            String existingValue = userCache.get(cacheMap.getKey());
            if(existingValue !=null){
+               LOGGER.error("In saveOrUpdate() client ::: REDIS Cache Name :: {}  adding the key : {}  failed as Key Already exists",cacheName, cacheMap.getKey());
                throw new KeyExistsException("key "+cacheMap.getKey()+" already exists, cannot continue!");
            }
-           logger.info("REDIS >>> added user with key :: " + cacheMap.getKey());
+           LOGGER.info("In saveOrUpdate() client ::: REDIS Cache Name :: {}  adding the key : {}  success",cacheName, cacheMap.getKey());
            userCache.put(String.valueOf(cacheMap.getKey()), cacheMap.getValue(), cacheMap.getTtl(), TimeUnit.SECONDS);
        }catch(Exception e){
-           logger.error("Error while saving or updating cache: " + e.getMessage());
+           LOGGER.error("In saveOrUpdate() client ::: REDIS Error while adding key : {}  exception : {}, stacktrace : {}",cacheMap.getKey(), e.getMessage(), Arrays.toString(e.getStackTrace()));
            throw e;
        }
     }

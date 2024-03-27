@@ -14,12 +14,13 @@ import org.springframework.stereotype.Component;
 
 import javax.cache.expiry.CreatedExpiryPolicy;
 import javax.cache.expiry.Duration;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /*This class interacts with Apache Ignite Cache and performs all cache operations like save/Update, delete and getValueByKey*/
 @Component
 public class ApacheIgniteClient implements GenericCacheClient {
-    private static final Logger logger = LoggerFactory.getLogger(ApacheIgniteClient.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApacheIgniteClient.class);
 
     @Autowired
     IgniteClient igniteClient;
@@ -30,60 +31,83 @@ public class ApacheIgniteClient implements GenericCacheClient {
     @Value("${cache.rebalance.mode:SYNC}")
     String cacheRebalanceMode;
 
-
-   /*  Retrieves the value associated with the given key from the cache  */
+    /***
+     * Retrieves the value associated with the given key from the cache
+     * @param key
+     * @return
+     */
     public String getValueById(String key) {
         try {
+            LOGGER.info("In getValueById() client ::: APACHE IGNITE searching with key :: {}", key);
             ClientCache<String, String> clientCache = igniteClient.getOrCreateCache(cacheName);
             String value = clientCache.get(key);
-            logger.info("APACHE IGNITE >>> searching user with key :: " + key + ", response received from cache :: " + value);
+            LOGGER.info("In getValueById() client ::: APACHE IGNITE key :: {} found", key);
             return value;
         } catch (Exception e) {
-            logger.error("Error while searching user with key from Apache Ignite");
+            LOGGER.error("In getValueById() client ::: APACHE IGNITE Error while searching with key :: {}",key);
             return null;
         }
     }
 
-    /* Deletes the entry associated with the given key from the cache */
+
+    /***
+     * Deletes the entry associated with the given key from the cache
+     * @param key
+     * @return
+     */
     public Boolean delete(String key) {
         try {
+            LOGGER.info("In delete() client ::: APACHE IGNITE deleting the key :: {}", key);
             ClientCache<String, String> clientCache = igniteClient.getOrCreateCache(cacheName);
             Boolean status = clientCache.remove(key);
-            logger.info("APACHE IGNITE >>> response after deletion :: " + status);
+            LOGGER.info("In delete() client ::: APACHE IGNITE deleting the key :: {} success", key);
             return status;
         } catch (Exception e) {
-            logger.error("Error while deleting key  " + key + "  from ApacheClient ");
+            LOGGER.error("In delete() client ::: APACHE IGNITE Error while deleting key : {}  from ApacheClient exception : {}, stacktrace : {} ",key, e.getMessage(), Arrays.toString(e.getStackTrace()));
             return false;
         }
     }
 
-    /* Saves or updates the value associated with the given key in the cache */
+
+    /***
+     * Saves or updates the value associated with the given key in the cache
+     * @param cacheMap
+     */
     public void saveOrUpdate(CacheMap cacheMap) {
         ClientCacheConfiguration cacheConfiguration = new ClientCacheConfiguration();
         cacheConfiguration.setName(cacheName);
         CacheRebalanceMode cacheRebalanceMode = getCacheRebalanceingModeFromConfig();
+        LOGGER.info("In saveOrUpdate() client ::: APACHE IGNITE  Rebalancing Mode ::: "+cacheRebalanceMode+"\t Cache Name ::"+cacheName+" trying adding the key : "+ cacheMap.getKey());
         cacheConfiguration.setRebalanceMode(cacheRebalanceMode);
-        logger.info("Cache Client ::: APACHE IGNITE \t Rebalancing Mode ::: "+cacheRebalanceMode+"\t Cache Name ::"+cacheName);
         ClientCache<String, String> clientCache = igniteClient.getOrCreateCache(cacheConfiguration).withExpirePolicy(new CreatedExpiryPolicy(new Duration(TimeUnit.SECONDS, cacheMap.getTtl())));
         clientCache.getConfiguration();
-        logger.info("APACHE IGNITE >>>trying to added user with key :: " + cacheMap.getKey());
         String existingValue = clientCache.get(cacheMap.getKey());
         if(existingValue !=null){
+            LOGGER.error("In saveOrUpdate() client ::: APACHE IGNITE  Rebalancing Mode ::: "+cacheRebalanceMode+"\t Cache Name ::"+cacheName+" adding the key : "+ cacheMap.getKey()+" failed as Key Already exists");
             throw new KeyExistsException("key "+cacheMap.getKey()+" already exists, cannot continue!");
         }
         try {
-            logger.info("APACHE IGNITE >>> added user with key :: " + cacheMap.getKey());
             clientCache.put(cacheMap.getKey(), cacheMap.getValue());
+            LOGGER.info("In saveOrUpdate() client ::: APACHE IGNITE  Rebalancing Mode ::: "+cacheRebalanceMode+"\t Cache Name ::"+cacheName+" adding the key : "+ cacheMap.getKey()+" success");
         } catch (Exception e) {
-            logger.error("Error while saving/updating the value for key");
+            LOGGER.error("In saveOrUpdate() client ::: APACHE IGNITE  Rebalancing Mode ::: "+cacheRebalanceMode+"\t Cache Name ::"+cacheName+" adding the key : "+ cacheMap.getKey()+" failed Error : "+e.getMessage()+"\t stacktrace : "+ Arrays.toString(e.getStackTrace()));
             throw new RuntimeException("Error :  " + e.getMessage(), e);
         }
     }
 
+    /***
+     *
+     * @return
+     */
     @Override
     public String toString() {
         return "ApacheIgniteClient";
     }
+
+    /***
+     * This method returns the using CacheRebalanceMode which is read from config
+     * @return
+     */
 
     public CacheRebalanceMode getCacheRebalanceingModeFromConfig(){
         CacheRebalanceMode finalCacheRebalanceMode = null;

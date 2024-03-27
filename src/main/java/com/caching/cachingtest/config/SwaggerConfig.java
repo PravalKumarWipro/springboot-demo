@@ -12,7 +12,12 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
-@Bean
+
+	/***
+	 * method to provide the swagger configs
+	 * @return
+	 */
+	@Bean
 public Docket SwaggerApi() {
 	return new Docket(DocumentationType.SWAGGER_2)
 			.select()

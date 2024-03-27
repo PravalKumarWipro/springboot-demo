@@ -18,6 +18,7 @@ services:
       CACHE_CLIENT: ${CACHE_VALUE}
       CACHE_NAME: ${CACHE_NAME}
       CACHE_REBALANCE_MODE: ${CACHE_REBALANCE_MODE}
+      LOGGING_CONFIG: /usr/local/lib/logback.xml
     ports:
       - 7070:7070
     depends_on:

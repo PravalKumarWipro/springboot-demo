@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+
 /* This class provides essential methods for managing cache data*/
 @Service
 public class CacheServiceImpl implements CacheService {
@@ -19,40 +21,52 @@ public class CacheServiceImpl implements CacheService {
     public CacheDao cacheDao;
     private static final Logger logger = LoggerFactory.getLogger(CacheServiceImpl.class);
 
-    /*  Retrieves a value from the cache based on the given key */
+
+    /***
+     * Retrieves a value from the cache based on the given key
+     * @param key
+     * @return
+     * @throws CacheNotFoundException
+     */
     @Override
     public String getValueByKey(String key) throws CacheNotFoundException {
         try {
             String value = cacheDao.getUserById(key);
-            logger.info("searching with key :: " + key + ", response received from cache :: " + value);
             if (value == null || value.length() == 0) {
-                logger.error("key " + key + " Not Found");
                 throw new CacheNotFoundException("key " + key + " Not Found");
             }
             return value;
         } catch (CacheNotFoundException e) {
-            logger.error("Exception while fetching value by key");
+            logger.error("In getValueByKey() Exception while fetching value by key excepion : {}\t stacktrace : {}", e.getMessage(), Arrays.toString(e.getStackTrace()));
             throw e;
         }
     }
 
-    /* Deletes a value from the cache using the specified key*/
+
+    /***
+     * Deletes a value from the cache using the specified key
+     * @param key
+     * @throws CacheNotFoundException
+     */
     @Override
     public void delete(String key) throws CacheNotFoundException {
         try {
             Boolean status = cacheDao.delete(key);
-            logger.info("deleting key :: " + key + ", response received from cache :: " + status);
             if (!status) {
-                logger.error("key " + key + " Not Found");
                 throw new CacheNotFoundException("key " + key + " Not Found");
             }
         } catch (CacheNotFoundException e) {
-            logger.error("Cache not found: " + e.getMessage());
+            logger.error("In delete() key not found exception :  {}\t stacktrace : {}", e.getMessage(),Arrays.toString(e.getStackTrace()));
             throw e;
         }
     }
 
-    /* Saves or updates a value in the cache with the given key and value*/
+
+    /***
+     * Saves or updates a value in the cache with the given key and value
+     * @param cacheMap
+     * @throws UnableToAddKeyException
+     */
     @Override
     public void saveOrUpdate(CacheMap cacheMap) throws UnableToAddKeyException {
         try {
@@ -60,13 +74,12 @@ public class CacheServiceImpl implements CacheService {
                 throw new InvalidTTLException("Invalid TTL - TTL should be > 0");
             }
             cacheDao.saveOrUpdate(cacheMap);
-            logger.info("added key :: " + cacheMap.getKey() + " \t data :: " + cacheMap);
         } catch (KeyExistsException keyExistsException) {
             throw keyExistsException;
         } catch (InvalidTTLException invalidTTLException) {
             throw invalidTTLException;
         } catch (Exception e) {
-            logger.error("key : " + cacheMap.getKey() + " Unable To Save");
+            logger.error("In saveOrUpdate()  key : {} Unable To Save exception : {}\t stacktrace : {}", cacheMap.getKey(),e.getMessage(),Arrays.toString(e.getStackTrace()));
             throw new UnableToAddKeyException("key" + cacheMap.getKey() + " Unable To Save");
         }
     }

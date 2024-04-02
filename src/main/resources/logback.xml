@@ -14,6 +14,17 @@
             </layout>
         </encoder>
     </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <root level="info">
+        <appender-ref ref="FILE" />
+    </root>
     <!-- LOG everything at INFO level -->
     <root level="info">
         <appender-ref ref="Console" />

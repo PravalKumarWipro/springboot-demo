@@ -2,12 +2,12 @@
 <configuration>
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-            <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
-               <!-- <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
-
-                        <prettyPrint>false</prettyPrint>
-
-                    </jsonFormatter>-->
+            <!--            <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">-->
+            <layout class="com.caching.cachingtest.config.CustomJsonLayout">
+                <jsonFormatter
+                        class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
+                    <prettyPrint>true</prettyPrint>
+                </jsonFormatter>
                 <timestampFormat>yyyy-MM-dd' 'HH:mm:ss.SSS</timestampFormat>
                 <appendLineSeparator>true</appendLineSeparator>
                 <includeContextName>true</includeContextName>
@@ -16,17 +16,26 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>logs.log</file>
+        <file>springboot-multi-cache.log</file>
         <append>true</append>
-        <encoder>
-            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <!--            <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">-->
+            <layout class="com.caching.cachingtest.config.CustomJsonLayout">
+                <jsonFormatter
+                        class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
+                    <prettyPrint>true</prettyPrint>
+                </jsonFormatter>
+                <timestampFormat>yyyy-MM-dd' 'HH:mm:ss.SSS</timestampFormat>
+                <appendLineSeparator>true</appendLineSeparator>
+                <includeContextName>true</includeContextName>
+            </layout>
         </encoder>
     </appender>
     <root level="info">
-        <appender-ref ref="FILE" />
+        <appender-ref ref="FILE"/>
     </root>
     <!-- LOG everything at INFO level -->
     <root level="info">
-        <appender-ref ref="Console" />
+        <appender-ref ref="Console"/>
     </root>
 </configuration>

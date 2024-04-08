@@ -1,1 +1,49 @@
+services:
+  redis:
+    container_name: redis_service
+    image: redis:latest
+    ports:
+      - 6379:6379
+  ignite:
+    container_name: ignite_service
+    #image: apacheignite/ignite
+    image: gridgain/community:8.9.2
+    ports:
+      - 10800:10800
+  cacheservice:
+    image: springboot-cache-image:latest
+    environment:
+      REDIS_URL: redis://redis:6379
+      IGNITE_URL: ignite:10800
+      CACHE_CLIENT: ${CACHE_VALUE}
+      CACHE_NAME: ${CACHE_NAME}
+      CACHE_REBALANCE_MODE: ${CACHE_REBALANCE_MODE}
+      LOGGING_CONFIG: /usr/local/lib/logback.xml
+    ports:
+      - 7070:7070
+    depends_on:
+      - redis
+      - ignite
+ # dapr sidecar start
+  cacheservice-dapr:
+    image: "daprio/daprd:edge"
+    command: ["./daprd",
+     "-app-id", "nodeapp",
+     "-app-port", "3000",
+     "-placement-host-address", "placement:50006",
+     "-dapr-grpc-port", "50002",
+     "-components-path", "/components"]
+    volumes:
+        - "./components/:/components"
+    depends_on:
+      - cacheservice
+    network_mode: "service:cacheservice"
+ # dapr sidecar end
 
+  quarkusclient:
+    container_name: quarkus-client
+    image: quarkus-client
+    environment:
+      BASE_URL: http://cacheservice:7070
+    ports:
+      - 7890:7890

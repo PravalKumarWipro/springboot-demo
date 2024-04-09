@@ -24,26 +24,32 @@ services:
     depends_on:
       - redis
       - ignite
- # dapr sidecar start
+ 
   cacheservice-dapr:
     image: "daprio/daprd:edge"
     command: ["./daprd",
-     "-app-id", "nodeapp",
+     "-app-id", "cacheservice",
      "-app-port", "3000",
      "-placement-host-address", "placement:50006",
      "-dapr-grpc-port", "50002",
      "-components-path", "/components"]
     volumes:
-        - "./components/:/components"
+      - "./components/:/components"
     depends_on:
       - cacheservice
     network_mode: "service:cacheservice"
- # dapr sidecar end
 
-  quarkusclient:
-    container_name: quarkus-client
-    image: quarkus-client
-    environment:
-      BASE_URL: http://cacheservice:7070
+  placement:
+    image: "daprio/dapr"
+    command: ["./placement", "--port", "50006"]
     ports:
-      - 7890:7890
+      - "50006:50006"
+ 
+
+        #quarkusclient:
+        #container_name: quarkus-client
+        #image: quarkus-client
+        #environment:
+        #BASE_URL: http://cacheservice:7070
+        #ports:
+        #- 7890:7890

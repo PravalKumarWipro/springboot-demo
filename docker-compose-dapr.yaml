@@ -29,7 +29,7 @@ services:
     image: "daprio/daprd:edge"
     command: ["./daprd",
      "-app-id", "cacheservice",
-     "-app-port", "3000",
+     "-app-port", "7070",
      "-placement-host-address", "placement:50006",
      "-dapr-grpc-port", "50002",
      "-components-path", "/components"]

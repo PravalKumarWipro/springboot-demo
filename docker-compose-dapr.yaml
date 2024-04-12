@@ -4,12 +4,16 @@ services:
     image: redis:latest
     ports:
       - 6379:6379
+    networks:
+      - dapr-network
   ignite:
     container_name: ignite_service
     #image: apacheignite/ignite
     image: gridgain/community:8.9.2
     ports:
       - 10800:10800
+    networks:
+      - dapr-network
   cacheservice:
     image: springboot-cache-image:latest
     environment:
@@ -24,32 +28,31 @@ services:
     depends_on:
       - redis
       - ignite
+    networks:
+      - dapr-network
  
   cacheservice-dapr:
-    image: "daprio/daprd:edge"
+    image: "daprio/daprd:1.8.0"
     command: ["./daprd",
      "-app-id", "cacheservice",
      "-app-port", "7070",
      "-placement-host-address", "placement:50006",
-     "-dapr-grpc-port", "50002",
-     "-components-path", "/components"]
+     "-components-path", "./components"]
     volumes:
       - "./components/:/components"
     depends_on:
       - cacheservice
+      - dapr-placement
     network_mode: "service:cacheservice"
 
-  placement:
-    image: "daprio/dapr"
+  dapr-placement:
+    image: "daprio/dapr:1.8.0"
     command: ["./placement", "--port", "50006"]
     ports:
       - "50006:50006"
- 
+    networks:
+      - dapr-network
 
-        #quarkusclient:
-        #container_name: quarkus-client
-        #image: quarkus-client
-        #environment:
-        #BASE_URL: http://cacheservice:7070
-        #ports:
-        #- 7890:7890
+  
+networks:
+   dapr-network:

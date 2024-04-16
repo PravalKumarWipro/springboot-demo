@@ -37,17 +37,18 @@ public class AppConfig {
      * Method to create and start Apache Ignite Caching Client
      * @return
      */
-    @Bean
+    @Bean(name = "CustomIgniteClient")
     public IgniteClient igniteClient() {
+        IgniteClient client = null;
         try {
+            LOGGER.info("Ignite Client creation started");
             ClientConfiguration cfg = new ClientConfiguration().setAddresses(apacheIgniteUrl);
-            IgniteClient client = Ignition.startClient(cfg);
+            client = Ignition.startClient(cfg);
             LOGGER.info("Ignite Client created");
-            return client;
         } catch (Exception e) {
             LOGGER.error("Error creating Ignite Client: {}\t stacktrace : {}",e.getMessage(), Arrays.toString(e.getStackTrace()));
-            throw new RuntimeException("Error creating Ignite Client : " + e.getMessage(), e);
         }
+        return client;
     }
 
 
@@ -55,18 +56,20 @@ public class AppConfig {
      * Method to create and start Redis Caching Client
      * @return
      */
-    @Bean(name = "RedissonClient")
+    @Bean(name = "CustomRedissonClient")
     public RedissonClient redisClient() {
+        RedissonClient client = null;
         try {
+            LOGGER.info("Redis Client creation started");
             Config config = new Config();
             config.useSingleServer()
                     .setAddress(redisBaseUrl);
-            RedissonClient client = Redisson.create(config);
+             client = Redisson.create(config);
             LOGGER.info("Redis Client created");
             return client;
         } catch (Exception e) {
             LOGGER.error("Error creating Redis Client: {}\t stacktrace : {}",e.getMessage(), Arrays.toString(e.getStackTrace()));
-            throw new RuntimeException("Error creating Redis Client : " + e.getMessage(), e);
         }
+        return client;
     }
 }

@@ -10,6 +10,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class CachingtestApplication {
 	public static void main(String[] args)
 	{
-		SpringApplication.run(CachingtestApplication.class, args);
+		SpringApplication app = new SpringApplication(CachingtestApplication.class);
+		app.setLazyInitialization(true);
+		app.run(args);
 	}
 }

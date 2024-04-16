@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class ApacheIgniteClient implements GenericCacheClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApacheIgniteClient.class);
 
-    @Autowired
+    @Autowired(required = false)
     IgniteClient igniteClient;
 
     @Value("${cache.name:Cache}")

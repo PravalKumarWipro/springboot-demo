@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class RedisClient implements GenericCacheClient {
 
-    @Autowired
+    @Autowired(required = false)
     RedissonClient redissonClient;
     @Value("${cache.name:Cache}")
     String cacheName;

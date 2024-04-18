@@ -42,6 +42,7 @@ public class ApacheIgniteClient implements GenericCacheClient {
             ClientCache<String, String> clientCache = igniteClient.getOrCreateCache(cacheName);
             String value = clientCache.get(key);
             LOGGER.info("In getValueById() client ::: APACHE IGNITE key :: {} found", key);
+            LOGGER.debug("In getValueById() client ::: APACHE IGNITE key :: {} found, value ::{}", key,value);
             return value;
         } catch (Exception e) {
             LOGGER.error("In getValueById() client ::: APACHE IGNITE Error while searching with key :: {}",key);
@@ -89,6 +90,7 @@ public class ApacheIgniteClient implements GenericCacheClient {
         try {
             clientCache.put(cacheMap.getKey(), cacheMap.getValue());
             LOGGER.info("In saveOrUpdate() client ::: APACHE IGNITE  Rebalancing Mode ::: "+cacheRebalanceMode+"\t Cache Name ::"+cacheName+" adding the key : "+ cacheMap.getKey()+" success");
+            LOGGER.debug("In saveOrUpdate() client ::: APACHE IGNITE  Rebalancing Mode ::: "+cacheRebalanceMode+"\t Cache Name ::"+cacheName+" adding the key : "+ cacheMap.getKey()+" success, value ::"+cacheMap.getValue());
         } catch (Exception e) {
             LOGGER.error("In saveOrUpdate() client ::: APACHE IGNITE  Rebalancing Mode ::: "+cacheRebalanceMode+"\t Cache Name ::"+cacheName+" adding the key : "+ cacheMap.getKey()+" failed Error : "+e.getMessage()+"\t stacktrace : "+ Arrays.toString(e.getStackTrace()));
             throw new RuntimeException("Error :  " + e.getMessage(), e);

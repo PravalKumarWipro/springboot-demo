@@ -38,6 +38,7 @@ public class RedisClient implements GenericCacheClient {
             RMapCache<String, String> userCache = redissonClient.getMapCache(cacheName);
             String value = userCache.get(String.valueOf(key));
             LOGGER.info("In getValueById() client ::: REDIS key :: {} found", key);
+            LOGGER.debug("In getValueById() client ::: REDIS key :: {} found, value :: {}", key,value);
             return value;
         }catch(CacheNotFoundException e){
             LOGGER.error("In getValueById() client :::REDIS Error while searching with key :: {}",key);
@@ -76,6 +77,7 @@ public class RedisClient implements GenericCacheClient {
        try {
            RMapCache<String, String> userCache = redissonClient.getMapCache(cacheName);
            LOGGER.info("In saveOrUpdate() client ::: REDIS  Cache Name :: {} trying  adding the key :: {}", cacheName, cacheMap.getKey());
+           LOGGER.debug("In saveOrUpdate() client ::: REDIS  Cache Name :: {} trying  adding the key :: {}, value :: {}", cacheName, cacheMap.getKey(),cacheMap.getValue());
            String existingValue = userCache.get(cacheMap.getKey());
            if(existingValue !=null){
                LOGGER.error("In saveOrUpdate() client ::: REDIS Cache Name :: {}  adding the key : {}  failed as Key Already exists",cacheName, cacheMap.getKey());

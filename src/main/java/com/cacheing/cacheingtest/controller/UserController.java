@@ -11,7 +11,7 @@ import com.cacheing.cacheingtest.AppConstants;
 public class UserController {
 	@Value("${cache.client:APACHE_IGNITE}")
     String cacheClient;
-
+    String dataUseTest = "Sample===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";
     @Autowired
     public UserServiceImpl userServiceImpl;
 

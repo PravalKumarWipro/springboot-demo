@@ -6,8 +6,8 @@ services:
     - 6379:6379
   ignite:
     container_name: ignite_service
-    image: apacheignite/ignite
-    #image: gridgain/community:8.9.2
+#    image: apacheignite/ignite
+    image: gridgain/community:8.9.2
     ports:
       - 10800:10800
   cacheservice:

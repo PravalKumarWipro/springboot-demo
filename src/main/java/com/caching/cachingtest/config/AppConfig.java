@@ -12,12 +12,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 import java.util.Arrays;
 
 /* This class contains application configuration settings related to different caching systems */
+@Lazy
 @Configuration
 public class AppConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(AppConfig.class);

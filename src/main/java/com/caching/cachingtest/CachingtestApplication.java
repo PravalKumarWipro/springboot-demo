@@ -30,7 +30,6 @@ public class CachingtestApplication {
 	public static void main(String[] args)
 	{
 		SpringApplication app = new SpringApplication(CachingtestApplication.class);
-		app.setLazyInitialization(true);
 		app.run(args);
 	}
 

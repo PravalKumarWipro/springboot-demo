@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.cache.expiry.CreatedExpiryPolicy;
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 /*This class interacts with Apache Ignite Cache and performs all cache operations like save/Update, delete and getValueByKey*/
 @Component
+@Lazy
 public class ApacheIgniteClient implements GenericCacheClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApacheIgniteClient.class);
 

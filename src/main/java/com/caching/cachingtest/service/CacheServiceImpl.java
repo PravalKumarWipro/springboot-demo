@@ -9,12 +9,14 @@ import com.caching.cachingtest.model.CacheMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 
 /* This class provides essential methods for managing cache data*/
 @Service
+@Lazy
 public class CacheServiceImpl implements CacheService {
 
     @Autowired

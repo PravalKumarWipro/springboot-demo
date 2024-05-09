@@ -10,15 +10,29 @@
     </parent>
     <packaging>jar</packaging>
     <groupId>com.cacheing</groupId>
-    <artifactId>cacheingtest</artifactId>
+    <artifactId>ignite-external-database</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>cacheingtest</name>
-    <description>Demo project for Spring Boot</description>
+    <name>ignite-external-database</name>
+    <description>Ignite operations</description>
     <properties>
-        <java.version>17</java.version>
-        <ignite.version>2.13.0</ignite.version>
+        <java.version>11</java.version>
+                <ignite.version>2.13.0</ignite.version>
+<!--        <gridgain.version>8.9.2</gridgain.version>-->
     </properties>
+  <!--  <repositories>
+        <repository>
+            <id>GridGain Repository</id>
+            <url>https://www.gridgainsystems.com/nexus/content/repositories/external</url>
+        </repository>
+    </repositories>-->
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/com.ibm.db2/jcc -->
+        <dependency>
+            <groupId>com.ibm.db2</groupId>
+            <artifactId>jcc</artifactId>
+            <version>11.5.9.0</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -45,24 +59,24 @@
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
             <version>3.20.0</version>
-	</dependency>
-        <dependency>
+        </dependency>
+        <!--  <dependency>
+              <groupId>org.apache.ignite</groupId>
+              <artifactId>ignite-core</artifactId>
+          <version>${ignite.version}</version>
+          </dependency>-->
+        <!--<dependency>
             <groupId>org.apache.ignite</groupId>
-            <artifactId>ignite-core</artifactId>
-	    <version>${ignite.version}</version>
-    	</dependency>
-	<dependency>
-	    <groupId>org.apache.ignite</groupId>
-	    <artifactId>ignite-log4j</artifactId>
-	    <version>${ignite.version}</version>
-	    <exclusions>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-	    </exclusions>
-	</dependency>
-	<!--<dependency>
+            <artifactId>ignite-log4j</artifactId>
+            <version>${ignite.version}</version>
+            <exclusions>
+                    <exclusion>
+                        <groupId>log4j</groupId>
+                        <artifactId>log4j</artifactId>
+                    </exclusion>
+            </exclusions>
+        </dependency>-->
+      <!--  <dependency>
             <groupId>org.gridgain</groupId>
             <artifactId>ignite-core</artifactId>
             <version>${gridgain.version}</version>
@@ -78,7 +92,7 @@
             <groupId>org.gridgain</groupId>
             <artifactId>ignite-indexing</artifactId>
             <version>${gridgain.version}</version>
-	</dependency> -->
+        </dependency>-->
         <!-- swagger dependency -->
         <dependency>
             <groupId>io.springfox</groupId>
@@ -88,6 +102,11 @@
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-data-rest</artifactId>
             <version>3.0.0</version>
         </dependency>
         <dependency>
@@ -134,6 +153,47 @@
             <groupId>ch.qos.logback.contrib</groupId>
             <artifactId>logback-jackson</artifactId>
             <version>0.1.5</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- Apache Ignite dependencies -->
+        <dependency>
+            <groupId>org.apache.ignite</groupId>
+            <artifactId>ignite-core</artifactId>
+            <version>${ignite.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ignite</groupId>
+            <artifactId>ignite-spring</artifactId>
+            <version>${ignite.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ignite</groupId>
+            <artifactId>ignite-spring-data_2.2</artifactId>
+            <version>2.9.1</version>
+        </dependency>
+
+        <!-- MySQL driver -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.197</version>
         </dependency>
 
     </dependencies>

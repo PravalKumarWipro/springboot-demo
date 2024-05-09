@@ -3,6 +3,7 @@ package com.caching.cachingtest.dao;
 import com.caching.cachingtest.AppConstants;
 import com.caching.cachingtest.exception.CacheNotFoundException;
 import com.caching.cachingtest.exception.KeyExistsException;
+import com.caching.cachingtest.exception.KeyNotExistsException;
 import com.caching.cachingtest.exception.UnableToAddKeyException;
 import com.caching.cachingtest.model.CacheMap;
 import org.slf4j.Logger;
@@ -24,7 +25,7 @@ public class CacheDao {
     @Autowired
     private ApacheIgniteClient apacheIgniteClient;
 
-    @Autowired
+    @Autowired(required = false)
     private RedisClient redisClient;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CacheDao.class);
@@ -62,17 +63,34 @@ public class CacheDao {
     }
 
     /***
-     *  Saves or updates a value in the cache with the given key and value
+     *  Saves  a value in the cache with the given key and value
      * @param cacheMap
      */
-    public void saveOrUpdate(CacheMap cacheMap) {
+    public void save(CacheMap cacheMap) {
         try {
             synchronized (this){
-                getClient().saveOrUpdate(cacheMap);
+                getClient().save(cacheMap);
                 LOGGER.info("In saveOrUpdate() Added key : {}, client : {} ", cacheMap.getKey(), cacheClient);
             }
         }catch (KeyExistsException keyExistsException){
             throw  keyExistsException;
+        }catch (UnableToAddKeyException e) {
+            throw e;
+        }
+    }
+
+    /***
+     *   updates a value in the cache with the given key and value
+     * @param cacheMap
+     */
+    public void update(CacheMap cacheMap) throws KeyNotExistsException{
+        try {
+            synchronized (this){
+                getClient().update(cacheMap);
+                LOGGER.info("In update() Added key : {}, client : {} ", cacheMap.getKey(), cacheClient);
+            }
+        }catch (KeyNotExistsException keyNotExistsException){
+            throw  keyNotExistsException;
         }catch (UnableToAddKeyException e) {
             throw e;
         }

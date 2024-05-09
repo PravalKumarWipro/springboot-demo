@@ -83,7 +83,7 @@ public class RedisClientTest {
             String userName = "Test";
             long ttl = 30;
             doReturn(userCache).when(redissonClient).getMapCache(cacheName);
-            redisClient.saveOrUpdate(new CacheMap(userId, userName,30L));
+            redisClient.save(new CacheMap(userId, userName,30L));
             verify(redissonClient).getMapCache(cacheName);
             verify(userCache).put(userId, userName,ttl, TimeUnit.SECONDS);
         }
@@ -92,14 +92,14 @@ public class RedisClientTest {
             String userId = "test456";
             String userName = "Test";
             when(redissonClient.getMapCache(cacheName)).thenThrow(new CacheNotFoundException("Error while saving or updating cache"));
-            Assert.assertThrows(CacheNotFoundException.class,()->redisClient.saveOrUpdate(new CacheMap(userId,userName,30L)));
+            Assert.assertThrows(CacheNotFoundException.class,()->redisClient.save(new CacheMap(userId,userName,30L)));
         }
     @Test
     public void testSaveOrUpdate_KeyExistsException(){
         CacheMap existingCacheMap = new CacheMap("existingKey", "existingValue", 30l);
         doReturn(userCache).when(redissonClient).getMapCache(cacheName);
         when(userCache.get(existingCacheMap.getKey())).thenReturn("existingValue");
-        Assert.assertThrows(KeyExistsException.class, () -> redisClient.saveOrUpdate(existingCacheMap));
+        Assert.assertThrows(KeyExistsException.class, () -> redisClient.save(existingCacheMap));
     }
 }
 

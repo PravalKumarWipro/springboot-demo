@@ -5,6 +5,7 @@ import com.caching.cachingtest.dao.ApacheIgniteClient;
 import com.caching.cachingtest.dao.CacheDao;
 import com.caching.cachingtest.exception.InvalidTTLException;
 import com.caching.cachingtest.exception.KeyExistsException;
+import com.caching.cachingtest.exception.KeyNotExistsException;
 import com.caching.cachingtest.model.CacheMap;
 import com.caching.cachingtest.model.Response;
 import com.caching.cachingtest.service.CacheServiceImpl;
@@ -25,7 +26,7 @@ import java.util.Arrays;
 @Lazy
 public class CacheController {
 
-    @Autowired
+    @Autowired(required = false)
     public CacheServiceImpl userServiceImpl;
 
     @Autowired
@@ -70,7 +71,7 @@ public class CacheController {
     public ResponseEntity<Response> getKey(HttpServletRequest request, @PathVariable("key") String key) {
         Response response = new Response(AppConstants.SUCCESS);
         try {
-            LOGGER.info("In getKey() fetching value with key : {} :: Req Path : {}", key, request.getRequestURI());
+            LOGGER.info("In getKey() fetching value with key : {} :: Req Path : {}, remoteAddress : {}", key, request.getRequestURI(),request.getRemoteAddr());
             response.setKey(key);
             response.setValue(userServiceImpl.getValueByKey(key));
             LOGGER.info("In getKey() value found with key {} :: Req Path : {} ", key, request.getRequestURI());
@@ -88,7 +89,7 @@ public class CacheController {
     public ResponseEntity<Response> deleteKey(HttpServletRequest request, @PathVariable("key") String key) {
         Response response = new Response(AppConstants.SUCCESS);
         try {
-            LOGGER.info("In deleteKey() key : {} \t Req Path :: {} ", key, request.getRequestURI());
+            LOGGER.info("In deleteKey() key : {} \t Req Path :: {} , remoteAddress :: {}", key, request.getRequestURI(),request.getRemoteAddr());
             userServiceImpl.delete(key);
             response.setMessage("key " + key + " removed");
             LOGGER.info("In deleteKey() Successfully removed key : {} \t Req Path :: {}", key, request.getRequestURI());
@@ -106,12 +107,12 @@ public class CacheController {
     public ResponseEntity<Response> addKey(HttpServletRequest request, @RequestBody CacheMap cacheMap) {
         Response response = new Response(AppConstants.SUCCESS);
         try {
-            LOGGER.debug("In addKey() Key : {} added \t Req Path : {}, payload :: {}",cacheMap.getKey(), request.getRequestURI(),(new ObjectMapper()).writeValueAsString(cacheMap));
+            LOGGER.debug("In addKey() Key : {} added \t Req Path : {}, payload :: {}, remoteaddress :: {}",cacheMap.getKey(), request.getRequestURI(),(new ObjectMapper()).writeValueAsString(cacheMap),request.getRemoteAddr());
             LOGGER.info("In addKey() key : {} \t Req Path :{}", cacheMap.getKey(), request.getRequestURI());
             if (cacheMap.getTtl() == null) {
                 cacheMap.setTtl(Long.MAX_VALUE);
             }
-            userServiceImpl.saveOrUpdate(cacheMap);
+            userServiceImpl.save(cacheMap);
             response.setKey(cacheMap.getKey());
             response.setValue(cacheMap.getValue());
             response.setMessage("key " + cacheMap.getKey() + " added");
@@ -130,6 +131,41 @@ public class CacheController {
             return new ResponseEntity<Response>(response, HttpStatus.BAD_REQUEST);
         }catch (Exception e) {
             LOGGER.error("In addKey() key : {} exception : {}\t stacktrace : {} \t Req Path :: {}",cacheMap.getKey(),e.getMessage(),Arrays.toString(e.getStackTrace()), request.getRequestURI());
+            response.setStatus("Bad Request");
+            response.setMessage("Error occurred : " + e.getMessage());
+            return new ResponseEntity<Response>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /* Endpoint to update a key in the cache */
+    @PutMapping("/caching/")
+    public ResponseEntity<Response> updateKey(HttpServletRequest request, @RequestBody CacheMap cacheMap) {
+        Response response = new Response(AppConstants.SUCCESS);
+        try {
+            LOGGER.debug("In updateKey() Key : {} updated \t Req Path : {}, payload :: {}",cacheMap.getKey(), request.getRequestURI(),(new ObjectMapper()).writeValueAsString(cacheMap));
+            LOGGER.info("In updateKey() key : {} \t Req Path :{}", cacheMap.getKey(), request.getRequestURI());
+            if (cacheMap.getTtl() == null) {
+                cacheMap.setTtl(Long.MAX_VALUE);
+            }
+            userServiceImpl.update(cacheMap);
+            response.setKey(cacheMap.getKey());
+            response.setValue(cacheMap.getValue());
+            response.setMessage("key " + cacheMap.getKey() + " updated");
+            LOGGER.info("In updateKey() Key : {} updated \t Req Path : {}",cacheMap.getKey(), request.getRequestURI());
+            LOGGER.debug("In updateKey() Key : {} updated \t Req Path : {}, payload :: {}, response :: {}",cacheMap.getKey(), request.getRequestURI(),(new ObjectMapper()).writeValueAsString(cacheMap), response.getMessage());
+            return new ResponseEntity<Response>(response, HttpStatus.CREATED);
+        }catch (KeyNotExistsException keyNotExistsException){
+            LOGGER.error("In updateKey() key : {} already existing in cache\t exception : {}\t stacktrace :{} \t Req Path :: {}",cacheMap.getKey(),keyNotExistsException.getMessage(),Arrays.toString(keyNotExistsException.getStackTrace()), request.getRequestURI());
+            response.setStatus("Bad Request");
+            response.setMessage(keyNotExistsException.getMessage());
+            return new ResponseEntity<Response>(response, HttpStatus.BAD_REQUEST);
+        }catch (InvalidTTLException invalidTTLException){
+            LOGGER.error("In updateKey() key : {} invalid ttl\t exception : {}\t stacktrace : {} \t Req Path :: {}",cacheMap.getKey(),invalidTTLException.getMessage(),Arrays.toString(invalidTTLException.getStackTrace()), request.getRequestURI());
+            response.setStatus("Bad Request");
+            response.setMessage(invalidTTLException.getMessage());
+            return new ResponseEntity<Response>(response, HttpStatus.BAD_REQUEST);
+        }catch (Exception e) {
+            LOGGER.error("In updateKey() key : {} exception : {}\t stacktrace : {} \t Req Path :: {}",cacheMap.getKey(),e.getMessage(),Arrays.toString(e.getStackTrace()), request.getRequestURI());
             response.setStatus("Bad Request");
             response.setMessage("Error occurred : " + e.getMessage());
             return new ResponseEntity<Response>(response, HttpStatus.INTERNAL_SERVER_ERROR);

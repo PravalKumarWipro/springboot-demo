@@ -2,6 +2,7 @@ package com.caching.cachingtest.dao;
 
 import com.caching.cachingtest.exception.CacheNotFoundException;
 import com.caching.cachingtest.exception.KeyExistsException;
+import com.caching.cachingtest.exception.KeyNotExistsException;
 import com.caching.cachingtest.model.CacheMap;
 import org.redisson.api.RMapCache;
 import org.redisson.api.RedissonClient;
@@ -20,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 @Lazy
 public class RedisClient implements GenericCacheClient {
 
-    @Autowired
+    @Autowired(required = false)
     RedissonClient redissonClient;
     @Value("${cache.name:Cache}")
     String cacheName;
@@ -75,7 +76,7 @@ public class RedisClient implements GenericCacheClient {
      * Saves Or Updates key-value to the Redis cache
      * @param cacheMap
      */
-    public void saveOrUpdate(CacheMap cacheMap) {
+    public void save(CacheMap cacheMap) {
        try {
            RMapCache<String, String> userCache = redissonClient.getMapCache(cacheName);
            LOGGER.info("In saveOrUpdate() client ::: REDIS  Cache Name :: {} trying  adding the key :: {}", cacheName, cacheMap.getKey());
@@ -91,6 +92,28 @@ public class RedisClient implements GenericCacheClient {
            LOGGER.error("In saveOrUpdate() client ::: REDIS Error while adding key : {}  exception : {}, stacktrace : {}",cacheMap.getKey(), e.getMessage(), Arrays.toString(e.getStackTrace()));
            throw e;
        }
+    }
+
+    /***
+     * Updates key-value to the Redis cache
+     * @param cacheMap
+     */
+    public void update(CacheMap cacheMap) throws KeyNotExistsException{
+        try {
+            RMapCache<String, String> userCache = redissonClient.getMapCache(cacheName);
+            LOGGER.info("In update() client ::: REDIS  Cache Name :: {} trying  adding the key :: {}", cacheName, cacheMap.getKey());
+            LOGGER.debug("In update() client ::: REDIS  Cache Name :: {} trying  adding the key :: {}, value :: {}", cacheName, cacheMap.getKey(),cacheMap.getValue());
+            String existingValue = userCache.get(cacheMap.getKey());
+            if(existingValue ==null){
+                LOGGER.error("In update() client ::: REDIS Cache Name :: {}  adding the key : {}  failed as Key Already exists",cacheName, cacheMap.getKey());
+                throw new KeyNotExistsException("key "+cacheMap.getKey()+" not exists, cannot continue!");
+            }
+            LOGGER.info("In update() client ::: REDIS Cache Name :: {}  adding the key : {}  success",cacheName, cacheMap.getKey());
+            userCache.put(String.valueOf(cacheMap.getKey()), cacheMap.getValue(), cacheMap.getTtl(), TimeUnit.SECONDS);
+        }catch(Exception e){
+            LOGGER.error("In update() client ::: REDIS Error while adding key : {}  exception : {}, stacktrace : {}",cacheMap.getKey(), e.getMessage(), Arrays.toString(e.getStackTrace()));
+            throw e;
+        }
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.caching.cachingtest.dao;
 
 import com.caching.cachingtest.exception.KeyExistsException;
+import com.caching.cachingtest.exception.KeyNotExistsException;
 import com.caching.cachingtest.model.CacheMap;
 import org.apache.ignite.cache.CacheRebalanceMode;
 import org.apache.ignite.client.ClientCache;
@@ -76,7 +77,7 @@ public class ApacheIgniteClient implements GenericCacheClient {
      * Saves or updates the value associated with the given key in the cache
      * @param cacheMap
      */
-    public void saveOrUpdate(CacheMap cacheMap) {
+    public void save(CacheMap cacheMap) {
         ClientCacheConfiguration cacheConfiguration = new ClientCacheConfiguration();
         cacheConfiguration.setName(cacheName);
         CacheRebalanceMode cacheRebalanceMode = getCacheRebalanceingModeFromConfig();
@@ -95,6 +96,33 @@ public class ApacheIgniteClient implements GenericCacheClient {
             LOGGER.debug("In saveOrUpdate() client ::: APACHE IGNITE  Rebalancing Mode ::: "+cacheRebalanceMode+"\t Cache Name ::"+cacheName+" adding the key : "+ cacheMap.getKey()+" success, value ::"+cacheMap.getValue());
         } catch (Exception e) {
             LOGGER.error("In saveOrUpdate() client ::: APACHE IGNITE  Rebalancing Mode ::: "+cacheRebalanceMode+"\t Cache Name ::"+cacheName+" adding the key : "+ cacheMap.getKey()+" failed Error : "+e.getMessage()+"\t stacktrace : "+ Arrays.toString(e.getStackTrace()));
+            throw new RuntimeException("Error :  " + e.getMessage(), e);
+        }
+    }
+
+    /***
+     *  updates the value associated with the given key in the cache
+     * @param cacheMap
+     */
+    public void update(CacheMap cacheMap) throws KeyNotExistsException{
+        ClientCacheConfiguration cacheConfiguration = new ClientCacheConfiguration();
+        cacheConfiguration.setName(cacheName);
+        CacheRebalanceMode cacheRebalanceMode = getCacheRebalanceingModeFromConfig();
+        LOGGER.info("In update() client ::: APACHE IGNITE  Rebalancing Mode ::: "+cacheRebalanceMode+"\t Cache Name ::"+cacheName+" trying update the key : "+ cacheMap.getKey());
+        cacheConfiguration.setRebalanceMode(cacheRebalanceMode);
+        ClientCache<String, String> clientCache = igniteClient.getOrCreateCache(cacheConfiguration).withExpirePolicy(new CreatedExpiryPolicy(new Duration(TimeUnit.SECONDS, cacheMap.getTtl())));
+        clientCache.getConfiguration();
+        String existingValue = clientCache.get(cacheMap.getKey());
+        if(existingValue == null){
+            LOGGER.error("In update() client ::: APACHE IGNITE  Rebalancing Mode ::: "+cacheRebalanceMode+"\t Cache Name ::"+cacheName+" update the key : "+ cacheMap.getKey()+" failed as Key Not exists");
+            throw new KeyNotExistsException("key "+cacheMap.getKey()+" not exists, cannot continue!");
+        }
+        try {
+            clientCache.put(cacheMap.getKey(), cacheMap.getValue());
+            LOGGER.info("In update() client ::: APACHE IGNITE  Rebalancing Mode ::: "+cacheRebalanceMode+"\t Cache Name ::"+cacheName+" updating the key : "+ cacheMap.getKey()+" success");
+            LOGGER.debug("In update() client ::: APACHE IGNITE  Rebalancing Mode ::: "+cacheRebalanceMode+"\t Cache Name ::"+cacheName+" updating the key : "+ cacheMap.getKey()+" success, value ::"+cacheMap.getValue());
+        } catch (Exception e) {
+            LOGGER.error("In update() client ::: APACHE IGNITE  Rebalancing Mode ::: "+cacheRebalanceMode+"\t Cache Name ::"+cacheName+" updating the key : "+ cacheMap.getKey()+" failed Error : "+e.getMessage()+"\t stacktrace : "+ Arrays.toString(e.getStackTrace()));
             throw new RuntimeException("Error :  " + e.getMessage(), e);
         }
     }

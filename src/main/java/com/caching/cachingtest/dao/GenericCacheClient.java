@@ -1,5 +1,6 @@
 package com.caching.cachingtest.dao;
 
+import com.caching.cachingtest.exception.KeyNotExistsException;
 import com.caching.cachingtest.model.CacheMap;
 
 /* This interface defines the methods to interact with Cache */
@@ -8,5 +9,6 @@ public interface GenericCacheClient {
 
     Boolean delete(String key);
 
-    void saveOrUpdate(CacheMap cacheMap);
+    void save(CacheMap cacheMap);
+    void update(CacheMap cacheMap) throws KeyNotExistsException;
 }

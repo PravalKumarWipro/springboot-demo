@@ -1,10 +1,7 @@
 package com.caching.cachingtest.service;
 
 import com.caching.cachingtest.dao.CacheDao;
-import com.caching.cachingtest.exception.CacheNotFoundException;
-import com.caching.cachingtest.exception.InvalidTTLException;
-import com.caching.cachingtest.exception.KeyExistsException;
-import com.caching.cachingtest.exception.UnableToAddKeyException;
+import com.caching.cachingtest.exception.*;
 import com.caching.cachingtest.model.CacheMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,12 +67,12 @@ public class CacheServiceImpl implements CacheService {
      * @throws UnableToAddKeyException
      */
     @Override
-    public void saveOrUpdate(CacheMap cacheMap) throws UnableToAddKeyException {
+    public void save(CacheMap cacheMap) throws UnableToAddKeyException {
         try {
             if (cacheMap.getTtl() <= 0) {
                 throw new InvalidTTLException("Invalid TTL - TTL should be > 0");
             }
-            cacheDao.saveOrUpdate(cacheMap);
+            cacheDao.save(cacheMap);
         } catch (KeyExistsException keyExistsException) {
             throw keyExistsException;
         } catch (InvalidTTLException invalidTTLException) {
@@ -83,6 +80,30 @@ public class CacheServiceImpl implements CacheService {
         } catch (Exception e) {
             logger.error("In saveOrUpdate()  key : {} Unable To Save exception : {}\t stacktrace : {}", cacheMap.getKey(),e.getMessage(),Arrays.toString(e.getStackTrace()));
             throw new UnableToAddKeyException("key" + cacheMap.getKey() + " Unable To Save");
+        }
+    }
+
+
+    /***
+     * updates a value in the cache with the given key and value
+     * @param cacheMap
+     * @throws UnableToAddKeyException
+     */
+    @Override
+    public void update(CacheMap cacheMap) throws UnableToUpdateKeyException,KeyNotExistsException {
+        try {
+            if (cacheMap.getTtl() <= 0) {
+                throw new InvalidTTLException("Invalid TTL - TTL should be > 0");
+            }
+            cacheDao.update(cacheMap);
+        } catch (KeyNotExistsException keyNotExistsException){
+            logger.error("In update()  key : {} KeyNot Exists exception : {}\t stacktrace : {}", cacheMap.getKey(),keyNotExistsException.getMessage(),Arrays.toString(keyNotExistsException.getStackTrace()));
+            throw  keyNotExistsException;
+        } catch (InvalidTTLException invalidTTLException) {
+            throw invalidTTLException;
+        } catch (Exception e) {
+            logger.error("In update()  key : {} Unable To Update exception : {}\t stacktrace : {}", cacheMap.getKey(),e.getMessage(),Arrays.toString(e.getStackTrace()));
+            throw new UnableToUpdateKeyException("key" + cacheMap.getKey() + " Unable To Update");
         }
     }
 }

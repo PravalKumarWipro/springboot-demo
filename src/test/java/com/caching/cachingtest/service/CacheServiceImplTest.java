@@ -70,36 +70,36 @@ public class CacheServiceImplTest {
     public void testSaveOrUpdate_Success() throws UnableToAddKeyException {
         String key = "Test123";
         String value = "Test";
-        Mockito.doNothing().when(cacheDao).saveOrUpdate(new CacheMap(key, value,30L));
-        userServiceImpl.saveOrUpdate(new CacheMap(key, value,30L));
-        verify(cacheDao, times(1)).saveOrUpdate(new CacheMap(key, value,30L));
+        Mockito.doNothing().when(cacheDao).save(new CacheMap(key, value,30L));
+        userServiceImpl.save(new CacheMap(key, value,30L));
+        verify(cacheDao, times(1)).save(new CacheMap(key, value,30L));
     }
     @Test
     public void testSaveOrUpdate_Failure() throws UnableToAddKeyException {
         String key = "Test123";
         String value = "Test";
-        Mockito.doThrow(new RuntimeException()).when(cacheDao).saveOrUpdate(new CacheMap(key, value,30L));
-        assertThrows(UnableToAddKeyException.class, () -> userServiceImpl.saveOrUpdate(new CacheMap(key, value,30L)));
+        Mockito.doThrow(new RuntimeException()).when(cacheDao).save(new CacheMap(key, value,30L));
+        assertThrows(UnableToAddKeyException.class, () -> userServiceImpl.save(new CacheMap(key, value,30L)));
     }
     @Test(expected = InvalidTTLException.class)
     public void testSaveOrUpdate_Failure_NegativeTtl() {
         String key = "Test123";
         String value = "Test";
         long ttl = -1l;
-        userServiceImpl.saveOrUpdate(new CacheMap(key,value,ttl));
+        userServiceImpl.save(new CacheMap(key,value,ttl));
     }
     @Test(expected = InvalidTTLException.class)
     public void testSaveOrUpdate_Failure_ZeroTtl() {
         String key = "Test123";
         String value = "Test";
         long ttl = 0l;
-        userServiceImpl.saveOrUpdate(new CacheMap(key,value,ttl));
+        userServiceImpl.save(new CacheMap(key,value,ttl));
     }
     @Test
     public void testSaveOrUpdate_keyExistsException() {
         String key = "existingKey";
         String value = "existingValue";
-        Mockito.doThrow(new KeyExistsException()).when(cacheDao).saveOrUpdate(new CacheMap(key, value,30L));
-        assertThrows(KeyExistsException.class, () -> userServiceImpl.saveOrUpdate(new CacheMap(key, value,30L)));
+        Mockito.doThrow(new KeyExistsException()).when(cacheDao).save(new CacheMap(key, value,30L));
+        assertThrows(KeyExistsException.class, () -> userServiceImpl.save(new CacheMap(key, value,30L)));
     }
 }

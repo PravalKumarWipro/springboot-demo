@@ -75,7 +75,7 @@ public class ApacheIgniteClientTest {
         doReturn(clientCache).when(igniteClient).getOrCreateCache(any(ClientCacheConfiguration.class));
         doReturn(clientCache).when(clientCache).withExpirePolicy(any());
         doNothing().when(clientCache).put(any(),any());
-        apacheIgniteClient.saveOrUpdate(new CacheMap(key,expectedvalue,30L));
+        apacheIgniteClient.save(new CacheMap(key,expectedvalue,30L));
         verify(clientCache,times(1)).put(key,expectedvalue);
     }
 
@@ -87,7 +87,7 @@ public class ApacheIgniteClientTest {
         doReturn(clientCache).when(igniteClient).getOrCreateCache(any(ClientCacheConfiguration.class));
         doReturn(clientCache).when(clientCache).withExpirePolicy(any());
         doNothing().when(clientCache).put(any(),any());
-        apacheIgniteClient.saveOrUpdate(new CacheMap(key,expectedvalue,30L));
+        apacheIgniteClient.save(new CacheMap(key,expectedvalue,30L));
         verify(clientCache,times(1)).put(key,expectedvalue);
     }
     @Test
@@ -98,7 +98,7 @@ public class ApacheIgniteClientTest {
         doReturn(clientCache).when(igniteClient).getOrCreateCache(any(ClientCacheConfiguration.class));
         doReturn(clientCache).when(clientCache).withExpirePolicy(any());
         doNothing().when(clientCache).put(any(),any());
-        apacheIgniteClient.saveOrUpdate(new CacheMap(key,expectedvalue,30L));
+        apacheIgniteClient.save(new CacheMap(key,expectedvalue,30L));
         verify(clientCache,times(1)).put(key,expectedvalue);
     }
     @Test
@@ -109,7 +109,7 @@ public class ApacheIgniteClientTest {
         doReturn(clientCache).when(clientCache).withExpirePolicy(any());
         when(clientCache.get(cacheMap.getKey())).thenReturn(null);
         doThrow(new RuntimeException("Error while saving/updating the value for key")).when(clientCache).put(cacheMap.getKey(),cacheMap.getValue());
-        Assert.assertThrows(RuntimeException.class, () -> apacheIgniteClient.saveOrUpdate(cacheMap));
+        Assert.assertThrows(RuntimeException.class, () -> apacheIgniteClient.save(cacheMap));
     }
     @Test
     public void testSaveOrUpdate_KeyExistsException(){
@@ -118,7 +118,7 @@ public class ApacheIgniteClientTest {
         doReturn(clientCache).when(igniteClient).getOrCreateCache(any(ClientCacheConfiguration.class));
         doReturn(clientCache).when(clientCache).withExpirePolicy(any());
         when(clientCache.get(existingCacheMap.getKey())).thenReturn("existingValue");
-        Assert.assertThrows(KeyExistsException.class, () -> apacheIgniteClient.saveOrUpdate(existingCacheMap));
+        Assert.assertThrows(KeyExistsException.class, () -> apacheIgniteClient.save(existingCacheMap));
     }
     @Test
     public void testGetCacheRebalanceingModeFromConfigSync(){

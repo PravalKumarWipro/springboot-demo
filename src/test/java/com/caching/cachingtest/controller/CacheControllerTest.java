@@ -110,7 +110,7 @@ public class CacheControllerTest {
         cacheMap.setTtl(10L);
         Response expectedResponse = new Response(AppConstants.SUCCESS);
         expectedResponse.setMessage("key " + cacheMap.getKey() + " added");
-        doNothing().when(userServiceImpl).saveOrUpdate(cacheMap);
+        doNothing().when(userServiceImpl).save(cacheMap);
         ResponseEntity<Response> response = cacheController.addKey(httpServletRequest,cacheMap);
         assertEquals(expectedResponse.getStatus(), response.getBody().getStatus());
         assertEquals(expectedResponse.getMessage(), response.getBody().getMessage());
@@ -124,7 +124,7 @@ public class CacheControllerTest {
         cacheMap.setTtl(null);
         Response expectedResponse = new Response(AppConstants.SUCCESS);
         expectedResponse.setMessage("key " + cacheMap.getKey() + " added");
-        doNothing().when(userServiceImpl).saveOrUpdate(cacheMap);
+        doNothing().when(userServiceImpl).save(cacheMap);
         ResponseEntity<Response> response = cacheController.addKey(httpServletRequest,cacheMap);
         assertEquals(expectedResponse.getStatus(), response.getBody().getStatus());
         assertEquals(expectedResponse.getMessage(), response.getBody().getMessage());
@@ -134,7 +134,7 @@ public class CacheControllerTest {
         String invalidKey = "-1";
         String invalidValue = "invalidValue";
         String errorMessage = "Unable to save key";
-        Mockito.doThrow(new RuntimeException(errorMessage)).when(userServiceImpl).saveOrUpdate(new CacheMap(invalidKey, invalidValue,30L));
+        Mockito.doThrow(new RuntimeException(errorMessage)).when(userServiceImpl).save(new CacheMap(invalidKey, invalidValue,30L));
         ResponseEntity<Response> actualResponse = cacheController.addKey(httpServletRequest,new CacheMap(invalidKey, invalidValue,30L));
         assertEquals("Error occurred : " + errorMessage, actualResponse.getBody().getMessage());
         Assert.assertEquals(500,actualResponse.getStatusCodeValue());
@@ -144,7 +144,7 @@ public class CacheControllerTest {
         String existingKey = "Test12";
         String existingValue = "existingValue";
         String errorMessage = "key already existing in cache";
-        Mockito.doThrow(new KeyExistsException(errorMessage)).when(userServiceImpl).saveOrUpdate(new CacheMap(existingKey, existingValue,30L));
+        Mockito.doThrow(new KeyExistsException(errorMessage)).when(userServiceImpl).save(new CacheMap(existingKey, existingValue,30L));
         ResponseEntity<Response> actualResponse = cacheController.addKey(httpServletRequest,new CacheMap(existingKey, existingValue,30L));
         assertEquals(errorMessage, actualResponse.getBody().getMessage());
         Assert.assertEquals(400,actualResponse.getStatusCodeValue());
@@ -154,7 +154,7 @@ public class CacheControllerTest {
         String existingKey = "Test12";
         String existingValue = "existingValue";
         String errorMessage = "key invalid ttl";
-        Mockito.doThrow(new InvalidTTLException(errorMessage)).when(userServiceImpl).saveOrUpdate(new CacheMap(existingKey, existingValue,-1l));
+        Mockito.doThrow(new InvalidTTLException(errorMessage)).when(userServiceImpl).save(new CacheMap(existingKey, existingValue,-1l));
         ResponseEntity<Response> actualResponse = cacheController.addKey(httpServletRequest,new CacheMap(existingKey, existingValue,-1l));
         assertEquals(errorMessage, actualResponse.getBody().getMessage());
         Assert.assertEquals(400,actualResponse.getStatusCodeValue());

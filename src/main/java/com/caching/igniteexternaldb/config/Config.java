@@ -5,10 +5,7 @@ import com.ibm.db2.jcc.DB2DataSource;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.Ignition;
-import org.apache.ignite.cache.CacheAtomicityMode;
-import org.apache.ignite.cache.CacheMode;
-import org.apache.ignite.cache.CacheWriteSynchronizationMode;
-import org.apache.ignite.cache.QueryEntity;
+import org.apache.ignite.cache.*;
 import org.apache.ignite.cache.store.jdbc.CacheJdbcPojoStoreFactory;
 import org.apache.ignite.cache.store.jdbc.JdbcType;
 import org.apache.ignite.cache.store.jdbc.JdbcTypeField;
@@ -41,10 +38,8 @@ public class Config {
         personCacheCfg.setWriteSynchronizationMode(CacheWriteSynchronizationMode.FULL_SYNC);
         personCacheCfg.setReadThrough(true);
         personCacheCfg.setWriteThrough(true);
-
         CacheJdbcPojoStoreFactory<Integer, Person> factory = new CacheJdbcPojoStoreFactory<>();
         factory.setDialect(new DB2Dialect());
-
           factory.setDataSourceFactory((Factory<DataSource>)() -> {
               DB2DataSource dataSource = new DB2DataSource();
               dataSource.setUser("db2inst1");

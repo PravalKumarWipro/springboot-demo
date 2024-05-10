@@ -1,10 +1,7 @@
 package com.caching.cachingtest.service;
 
 import com.caching.cachingtest.dao.CacheDao;
-import com.caching.cachingtest.exception.CacheNotFoundException;
-import com.caching.cachingtest.exception.InvalidTTLException;
-import com.caching.cachingtest.exception.KeyExistsException;
-import com.caching.cachingtest.exception.UnableToAddKeyException;
+import com.caching.cachingtest.exception.*;
 import com.caching.cachingtest.model.CacheMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,7 +64,7 @@ public class CacheServiceImplTest {
         assertThrows(CacheNotFoundException.class, () -> userServiceImpl.delete(key));
     }
     @Test
-    public void testSaveOrUpdate_Success() throws UnableToAddKeyException {
+    public void testSave_Success() throws UnableToAddKeyException {
         String key = "Test123";
         String value = "Test";
         Mockito.doNothing().when(cacheDao).save(new CacheMap(key, value,30L));
@@ -75,31 +72,67 @@ public class CacheServiceImplTest {
         verify(cacheDao, times(1)).save(new CacheMap(key, value,30L));
     }
     @Test
-    public void testSaveOrUpdate_Failure() throws UnableToAddKeyException {
+    public void testSave_Failure() throws UnableToAddKeyException {
         String key = "Test123";
         String value = "Test";
         Mockito.doThrow(new RuntimeException()).when(cacheDao).save(new CacheMap(key, value,30L));
         assertThrows(UnableToAddKeyException.class, () -> userServiceImpl.save(new CacheMap(key, value,30L)));
     }
     @Test(expected = InvalidTTLException.class)
-    public void testSaveOrUpdate_Failure_NegativeTtl() {
+    public void testSave_Failure_NegativeTtl() {
         String key = "Test123";
         String value = "Test";
         long ttl = -1l;
         userServiceImpl.save(new CacheMap(key,value,ttl));
     }
     @Test(expected = InvalidTTLException.class)
-    public void testSaveOrUpdate_Failure_ZeroTtl() {
+    public void testSave_Failure_ZeroTtl() {
         String key = "Test123";
         String value = "Test";
         long ttl = 0l;
         userServiceImpl.save(new CacheMap(key,value,ttl));
     }
     @Test
-    public void testSaveOrUpdate_keyExistsException() {
+    public void testSave_keyExistsException() {
         String key = "existingKey";
         String value = "existingValue";
         Mockito.doThrow(new KeyExistsException()).when(cacheDao).save(new CacheMap(key, value,30L));
         assertThrows(KeyExistsException.class, () -> userServiceImpl.save(new CacheMap(key, value,30L)));
+    }
+    @Test
+    public void testUpdate_Success() throws UnableToAddKeyException {
+        String key = "Test123";
+        String updatedvalue = "Test";
+        Mockito.doNothing().when(cacheDao).update(new CacheMap(key, updatedvalue,30L));
+        userServiceImpl.update(new CacheMap(key, updatedvalue,30L));
+        verify(cacheDao, times(1)).update(new CacheMap(key, updatedvalue,30L));
+    }
+    @Test
+    public void testUpdate_Failure() throws UnableToUpdateKeyException {
+        String key = "Test123";
+        String updatedvalue = "Test";
+        Mockito.doThrow(new RuntimeException()).when(cacheDao).update(new CacheMap(key, updatedvalue,30L));
+        assertThrows(UnableToUpdateKeyException.class, () -> userServiceImpl.update(new CacheMap(key, updatedvalue,30L)));
+    }
+    @Test(expected = InvalidTTLException.class)
+    public void testUpdate_Failure_NegativeTtl() {
+        String key = "Test123";
+        String updatedvalue = "Test";
+        long ttl = -1l;
+        userServiceImpl.update(new CacheMap(key,updatedvalue,ttl));
+    }
+    @Test(expected = InvalidTTLException.class)
+    public void testUpdate_Failure_ZeroTtl() {
+        String key = "Test123";
+        String updatedvalue = "Test";
+        long ttl = 0l;
+        userServiceImpl.update(new CacheMap(key,updatedvalue,ttl));
+    }
+    @Test
+    public void testUpdate_keyNotExistsException() {
+        String key = "123";
+        String updatedvalue = "Test";
+        Mockito.doThrow(new KeyNotExistsException()).when(cacheDao).update(new CacheMap(key, updatedvalue,30L));
+        assertThrows(KeyNotExistsException.class, () -> userServiceImpl.update(new CacheMap(key, updatedvalue,30L)));
     }
 }

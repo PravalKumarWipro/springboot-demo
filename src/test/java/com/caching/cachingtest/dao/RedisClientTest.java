@@ -2,6 +2,8 @@ package com.caching.cachingtest.dao;
 
 import com.caching.cachingtest.exception.CacheNotFoundException;
 import com.caching.cachingtest.exception.KeyExistsException;
+import com.caching.cachingtest.exception.KeyNotExistsException;
+import com.caching.cachingtest.exception.KeyNotExistsExceptionTest;
 import com.caching.cachingtest.model.CacheMap;
 import org.junit.Assert;
 import org.junit.Test;
@@ -51,55 +53,80 @@ public class RedisClientTest {
 
         @Test
         public void testDelete_Success() {
-            String userId = "test456";
+            String key = "test456";
             doReturn(userCache).when(redissonClient).getMapCache(cacheName);
-            when(userCache.remove(userId)).thenReturn("Testing");
-            Boolean deletionResult = redisClient.delete(userId);
+            when(userCache.remove(key)).thenReturn("Testing");
+            Boolean deletionResult = redisClient.delete(key);
             assertTrue(deletionResult);
             verify(redissonClient).getMapCache(cacheName);
-            verify(userCache).remove(userId);
+            verify(userCache).remove(key);
         }
 
         @Test
         public void testDelete_UserNotFound() {
-            String userId = "test456";
+            String key = "test456";
             doReturn(userCache).when(redissonClient).getMapCache(cacheName);
-            when(userCache.remove(userId)).thenReturn(null);
-            Boolean deletionResult = redisClient.delete(userId);
+            when(userCache.remove(key)).thenReturn(null);
+            Boolean deletionResult = redisClient.delete(key);
             assertFalse(deletionResult);
             verify(redissonClient).getMapCache(cacheName);
-            verify(userCache).remove(userId);
+            verify(userCache).remove(key);
         }
         @Test
         public void testDelete_Failure(){
-            String userId = "test456";
+            String key = "test456";
             when(redissonClient.getMapCache(cacheName)).thenThrow(new CacheNotFoundException("Error while deleting a key"));
-            Assert.assertThrows(CacheNotFoundException.class,()->redisClient.delete(userId));
+            Assert.assertThrows(CacheNotFoundException.class,()->redisClient.delete(key));
         }
 
         @Test
-        public void testSaveOrUpdate_Success() {
-            String userId = "test456";
-            String userName = "Test";
+        public void testSave_Success() {
+            String key = "test456";
+            String value = "Test";
             long ttl = 30;
             doReturn(userCache).when(redissonClient).getMapCache(cacheName);
-            redisClient.save(new CacheMap(userId, userName,30L));
+            redisClient.save(new CacheMap(key, value,30L));
             verify(redissonClient).getMapCache(cacheName);
-            verify(userCache).put(userId, userName,ttl, TimeUnit.SECONDS);
+            verify(userCache).put(key, value,ttl, TimeUnit.SECONDS);
         }
         @Test
-        public void testSaveOrUpdate_Failure(){
-            String userId = "test456";
-            String userName = "Test";
+        public void testSave_Failure(){
+            String key = "test456";
+            String value = "Test";
             when(redissonClient.getMapCache(cacheName)).thenThrow(new CacheNotFoundException("Error while saving or updating cache"));
-            Assert.assertThrows(CacheNotFoundException.class,()->redisClient.save(new CacheMap(userId,userName,30L)));
+            Assert.assertThrows(CacheNotFoundException.class,()->redisClient.save(new CacheMap(key,value,30L)));
         }
-    @Test
-    public void testSaveOrUpdate_KeyExistsException(){
-        CacheMap existingCacheMap = new CacheMap("existingKey", "existingValue", 30l);
-        doReturn(userCache).when(redissonClient).getMapCache(cacheName);
-        when(userCache.get(existingCacheMap.getKey())).thenReturn("existingValue");
-        Assert.assertThrows(KeyExistsException.class, () -> redisClient.save(existingCacheMap));
-    }
+        @Test
+        public void testSave_KeyExistsException(){
+            CacheMap existingCacheMap = new CacheMap("existingKey", "existingValue", 30l);
+            doReturn(userCache).when(redissonClient).getMapCache(cacheName);
+            when(userCache.get(existingCacheMap.getKey())).thenReturn("existingValue");
+            Assert.assertThrows(KeyExistsException.class, () -> redisClient.save(existingCacheMap));
+        }
+        @Test
+        public void testUpdate_Success() {
+            String key = "test456";
+            String updatedvalue = "Test";
+            long ttl = 30;
+            doReturn(userCache).when(redissonClient).getMapCache(cacheName);
+            when(userCache.get(key)).thenReturn("existingValue");
+            redisClient.update(new CacheMap(key, updatedvalue,30L));
+            verify(redissonClient).getMapCache(cacheName);
+            verify(userCache).put(key, updatedvalue,ttl, TimeUnit.SECONDS);
+        }
+        @Test
+        public void testUpdate_Failure(){
+            String key = "test456";
+            String updatedvalue = "Test";
+            when(redissonClient.getMapCache(cacheName)).thenThrow(new CacheNotFoundException("Error while saving or updating cache"));
+            Assert.assertThrows(CacheNotFoundException.class,()->redisClient.update(new CacheMap(key,updatedvalue,30L)));
+        }
+        @Test
+        public void testUpdate_KeyNotExistsException(){
+            CacheMap existingCacheMap = new CacheMap("existingKey", "updatedValue", 30l);
+            doReturn(userCache).when(redissonClient).getMapCache(cacheName);
+            when(userCache.get(existingCacheMap.getKey())).thenReturn(null);
+            Assert.assertThrows(KeyNotExistsException.class, () -> redisClient.update(existingCacheMap));
+        }
 }
 

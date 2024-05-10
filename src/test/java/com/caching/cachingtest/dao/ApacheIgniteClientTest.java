@@ -1,6 +1,8 @@
 package com.caching.cachingtest.dao;
 
 import com.caching.cachingtest.exception.KeyExistsException;
+import com.caching.cachingtest.exception.KeyNotExistsException;
+import com.caching.cachingtest.exception.KeyNotExistsExceptionTest;
 import com.caching.cachingtest.model.CacheMap;
 import org.apache.ignite.cache.CacheRebalanceMode;
 import org.apache.ignite.client.ClientCache;
@@ -68,7 +70,7 @@ public class ApacheIgniteClientTest {
         Assert.assertFalse(result);
     }
     @Test
-    public void testSaveOrUpdate_Success_SYNC(){
+    public void testSave_Success_SYNC(){
         String key="Test123";
         String expectedvalue="Test";
         apacheIgniteClient.cacheRebalanceMode="SYNC";
@@ -80,7 +82,7 @@ public class ApacheIgniteClientTest {
     }
 
     @Test
-    public void testSaveOrUpdate_Success_ASYNC(){
+    public void testSave_Success_ASYNC(){
         String key="Test123";
         String expectedvalue="Test";
         apacheIgniteClient.cacheRebalanceMode="ASYNC";
@@ -91,7 +93,7 @@ public class ApacheIgniteClientTest {
         verify(clientCache,times(1)).put(key,expectedvalue);
     }
     @Test
-    public void testSaveOrUpdate_Success_NONE(){
+    public void testSave_Success_NONE(){
         String key="Test123";
         String expectedvalue="Test";
         apacheIgniteClient.cacheRebalanceMode="NONE";
@@ -102,23 +104,81 @@ public class ApacheIgniteClientTest {
         verify(clientCache,times(1)).put(key,expectedvalue);
     }
     @Test
-    public void testSaveOrUpdate_Failure(){
+    public void testSave_Failure(){
         CacheMap cacheMap = new CacheMap("Test123", "Test", 30l);
         apacheIgniteClient.cacheRebalanceMode="SYNC";
         doReturn(clientCache).when(igniteClient).getOrCreateCache(any(ClientCacheConfiguration.class));
         doReturn(clientCache).when(clientCache).withExpirePolicy(any());
         when(clientCache.get(cacheMap.getKey())).thenReturn(null);
-        doThrow(new RuntimeException("Error while saving/updating the value for key")).when(clientCache).put(cacheMap.getKey(),cacheMap.getValue());
+        doThrow(new RuntimeException("Error while saving the value for key")).when(clientCache).put(cacheMap.getKey(),cacheMap.getValue());
         Assert.assertThrows(RuntimeException.class, () -> apacheIgniteClient.save(cacheMap));
     }
     @Test
-    public void testSaveOrUpdate_KeyExistsException(){
+    public void testSave_KeyExistsException(){
         CacheMap existingCacheMap = new CacheMap("existingKey", "existingValue", 30l);
         apacheIgniteClient.cacheRebalanceMode="SYNC";
         doReturn(clientCache).when(igniteClient).getOrCreateCache(any(ClientCacheConfiguration.class));
         doReturn(clientCache).when(clientCache).withExpirePolicy(any());
         when(clientCache.get(existingCacheMap.getKey())).thenReturn("existingValue");
         Assert.assertThrows(KeyExistsException.class, () -> apacheIgniteClient.save(existingCacheMap));
+    }
+
+    @Test
+    public void testUpdate_Success_SYNC(){
+        String existingKey="Test123";
+        String updatedvalue="Test";
+        apacheIgniteClient.cacheRebalanceMode="SYNC";
+        when(clientCache.get(existingKey)).thenReturn("existingValue");
+        doReturn(clientCache).when(igniteClient).getOrCreateCache(any(ClientCacheConfiguration.class));
+        doReturn(clientCache).when(clientCache).withExpirePolicy(any());
+        doNothing().when(clientCache).put(any(),any());
+        apacheIgniteClient.update(new CacheMap(existingKey,updatedvalue,30L));
+        verify(clientCache,times(1)).put(existingKey,updatedvalue);
+    }
+
+    @Test
+    public void testUpdate_Success_ASYNC(){
+        CacheMap existingCacheMap = new CacheMap("existingKey", "existingValue", 30l);
+        String Updatedvalue="Test";
+        apacheIgniteClient.cacheRebalanceMode="ASYNC";
+        when(clientCache.get(existingCacheMap.getKey())).thenReturn("existingValue");
+        doReturn(clientCache).when(igniteClient).getOrCreateCache(any(ClientCacheConfiguration.class));
+        doReturn(clientCache).when(clientCache).withExpirePolicy(any());
+        doNothing().when(clientCache).put(any(),any());
+        apacheIgniteClient.update(new CacheMap(existingCacheMap.getKey(), Updatedvalue,30L));
+        verify(clientCache,times(1)).put(existingCacheMap.getKey(), Updatedvalue);
+    }
+    @Test
+    public void testUpdate_Success_NONE(){
+        String existingKey="Test123";
+        String updatedvalue="Test";
+        apacheIgniteClient.cacheRebalanceMode="NONE";
+        when(clientCache.get(existingKey)).thenReturn("existingValue");
+        doReturn(clientCache).when(igniteClient).getOrCreateCache(any(ClientCacheConfiguration.class));
+        doReturn(clientCache).when(clientCache).withExpirePolicy(any());
+        doNothing().when(clientCache).put(any(),any());
+        apacheIgniteClient.update(new CacheMap(existingKey,updatedvalue,30L));
+        verify(clientCache,times(1)).put(existingKey,updatedvalue);
+    }
+    @Test
+    public void testUpdate_Failure_KeyNotExistsException(){
+        CacheMap cacheMap = new CacheMap("Test123", "Test", 30l);
+        apacheIgniteClient.cacheRebalanceMode="SYNC";
+        doReturn(clientCache).when(igniteClient).getOrCreateCache(any(ClientCacheConfiguration.class));
+        doReturn(clientCache).when(clientCache).withExpirePolicy(any());
+        when(clientCache.get(cacheMap.getKey())).thenReturn(null);
+        Assert.assertThrows(KeyNotExistsException.class, () -> apacheIgniteClient.update(cacheMap));
+    }
+
+    @Test
+    public void testUpdate_Failure(){
+        CacheMap cacheMap = new CacheMap("Test123", "Test", 30l);
+        apacheIgniteClient.cacheRebalanceMode="SYNC";
+        doReturn(clientCache).when(igniteClient).getOrCreateCache(any(ClientCacheConfiguration.class));
+        doReturn(clientCache).when(clientCache).withExpirePolicy(any());
+        when(clientCache.get(cacheMap.getKey())).thenReturn("existingValue");
+        doThrow(new RuntimeException("Error while saving/updating the value for key")).when(clientCache).put(cacheMap.getKey(),cacheMap.getValue());
+        Assert.assertThrows(RuntimeException.class, () -> apacheIgniteClient.update(cacheMap));
     }
     @Test
     public void testGetCacheRebalanceingModeFromConfigSync(){

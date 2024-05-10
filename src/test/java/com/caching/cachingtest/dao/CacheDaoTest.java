@@ -2,9 +2,7 @@ package com.caching.cachingtest.dao;
 
 
 import com.caching.cachingtest.AppConstants;
-import com.caching.cachingtest.exception.CacheNotFoundException;
-import com.caching.cachingtest.exception.KeyExistsException;
-import com.caching.cachingtest.exception.UnableToAddKeyException;
+import com.caching.cachingtest.exception.*;
 import com.caching.cachingtest.model.CacheMap;
 import org.junit.Assert;
 import org.junit.Test;
@@ -77,92 +75,143 @@ public class CacheDaoTest {
 
     @Test
     public void testDelete_ApacheIgnite_Success() {
-        String userId = "test456";
+        String key = "test456";
         cacheDao.cacheClient = AppConstants.CACHE_APACHE_IGNITE;
-        when(apacheIgniteClient.delete(userId)).thenReturn(true);
-        boolean result = cacheDao.delete(userId);
+        when(apacheIgniteClient.delete(key)).thenReturn(true);
+        boolean result = cacheDao.delete(key);
         assertTrue(result);
-        verify(apacheIgniteClient, times(1)).delete(userId);
-        verify(redisClient, never()).delete(userId);
+        verify(apacheIgniteClient, times(1)).delete(key);
+        verify(redisClient, never()).delete(key);
     }
 
     @Test
     public void testDelete_ApacheIgnite_Failure(){
-        String userId = "test456";
+        String key = "test456";
         cacheDao.cacheClient = AppConstants.CACHE_APACHE_IGNITE;
-        when(apacheIgniteClient.delete(userId)).thenThrow(new CacheNotFoundException("Failed to delete key from cache with exception : "));
-        Assert.assertThrows(CacheNotFoundException.class,()->cacheDao.delete(userId));
+        when(apacheIgniteClient.delete(key)).thenThrow(new CacheNotFoundException("Failed to delete key from cache with exception : "));
+        Assert.assertThrows(CacheNotFoundException.class,()->cacheDao.delete(key));
     }
 
     @Test
     public void testDelete_Redis_Success() {
-        String userId = "test456";
+        String key = "test456";
         cacheDao.cacheClient = AppConstants.CACHE_REDIS;
-        when(redisClient.delete(userId)).thenReturn(true);
-        boolean result = cacheDao.delete(userId);
+        when(redisClient.delete(key)).thenReturn(true);
+        boolean result = cacheDao.delete(key);
         assertTrue(result);
-        verify(apacheIgniteClient, never()).delete(userId);
-        verify(redisClient, times(1)).delete(userId);
+        verify(apacheIgniteClient, never()).delete(key);
+        verify(redisClient, times(1)).delete(key);
     }
 
     @Test
     public void testDelete_Redis_Failure(){
-        String userId = "test456";
+        String key = "test456";
         cacheDao.cacheClient = AppConstants.CACHE_REDIS;
-        when(redisClient.delete(userId)).thenThrow(new CacheNotFoundException("Failed to delete key from cache with exception : "));
-        Assert.assertThrows(CacheNotFoundException.class,()->cacheDao.delete(userId));
+        when(redisClient.delete(key)).thenThrow(new CacheNotFoundException("Failed to delete key from cache with exception : "));
+        Assert.assertThrows(CacheNotFoundException.class,()->cacheDao.delete(key));
     }
 
     @Test
-    public void testSaveOrUpdate_ApacheIgnite_Success() {
-        String userId = "test456";
-        String userName = "Test";
+    public void testSave_ApacheIgnite_Success() {
+        String key = "test456";
+        String value = "Test";
         cacheDao.cacheClient = AppConstants.CACHE_APACHE_IGNITE;
-        cacheDao.save(new CacheMap(userId, userName,30L));
-        verify(apacheIgniteClient, times(1)).save(new CacheMap(userId, userName,30L));
-        verify(redisClient, never()).save(new CacheMap(userId, userName,30L));
+        cacheDao.save(new CacheMap(key, value,30L));
+        verify(apacheIgniteClient, times(1)).save(new CacheMap(key, value,30L));
+        verify(redisClient, never()).save(new CacheMap(key, value,30L));
     }
 
     @Test
-    public void testSaveOrUpdate_ApacheIgnite_Failure(){
-        String userId = "test456";
-        String userName = "Test";
+    public void testSave_ApacheIgnite_Failure(){
+        String key = "test456";
+        String value = "Test";
         cacheDao.cacheClient = AppConstants.CACHE_APACHE_IGNITE;
-        doThrow(new UnableToAddKeyException("Unable to add key")).when(apacheIgniteClient).save(new CacheMap(userId,userName,30L));
-        assertThrows(UnableToAddKeyException.class,()->cacheDao.save(new CacheMap(userId,userName,30L)));
+        doThrow(new UnableToAddKeyException("Unable to add key")).when(apacheIgniteClient).save(new CacheMap(key,value,30L));
+        assertThrows(UnableToAddKeyException.class,()->cacheDao.save(new CacheMap(key,value,30L)));
     }
     @Test
-    public void testSaveOrUpdate_ApacheIgnite_KeyExistsException(){
-        CacheMap existingCacheMap = new CacheMap("existingKey", "existingValue", 30l);
+    public void testSave_ApacheIgnite_KeyExistsException(){
+        CacheMap existingCacheMap = new CacheMap("existingKey", "existingValue", 30L);
         cacheDao.cacheClient = AppConstants.CACHE_APACHE_IGNITE;
         doThrow(new KeyExistsException("key already existing in cache")).when(apacheIgniteClient).save(existingCacheMap);
         assertThrows(KeyExistsException.class,()->cacheDao.save(existingCacheMap));
     }
 
     @Test
-    public void testSaveOrUpdate_Redis_Success() {
-        String userId = "test456";
-        String userName = "Test";
+    public void testSave_Redis_Success() {
+        String key = "test456";
+        String value = "Test";
         cacheDao.cacheClient = AppConstants.CACHE_REDIS;
-        cacheDao.save(new CacheMap(userId, userName,30l));
-        verify(apacheIgniteClient, never()).save(new CacheMap(userId, userName,30L));
-        verify(redisClient, times(1)).save(new CacheMap(userId, userName,30L));
+        cacheDao.save(new CacheMap(key, value,30L));
+        verify(apacheIgniteClient, never()).save(new CacheMap(key, value,30L));
+        verify(redisClient, times(1)).save(new CacheMap(key, value,30L));
     }
     @Test
-    public void testSaveOrUpdate_Redis_Failure(){
-        String userId = "test456";
-        String userName = "Test";
+    public void testSave_Redis_Failure(){
+        String key = "test456";
+        String value = "Test";
         cacheDao.cacheClient = AppConstants.CACHE_REDIS;
-        doThrow(new UnableToAddKeyException("Unable to add key")).when(redisClient).save(new CacheMap(userId,userName,30L));
-        assertThrows(UnableToAddKeyException.class,()->cacheDao.save(new CacheMap(userId,userName,30L)));
+        doThrow(new UnableToAddKeyException("Unable to add key")).when(redisClient).save(new CacheMap(key,value,30L));
+        assertThrows(UnableToAddKeyException.class,()->cacheDao.save(new CacheMap(key,value,30L)));
     }
-
     @Test
-    public void testSaveOrUpdate_Redis_KeyExistsException(){
-        CacheMap existingCacheMap = new CacheMap("existingKey", "existingValue", 30l);
+    public void testSave_Redis_KeyExistsException(){
+        CacheMap existingCacheMap = new CacheMap("existingKey", "existingValue", 30L);
         cacheDao.cacheClient = AppConstants.CACHE_REDIS;
         doThrow(new KeyExistsException("key already existing in cache")).when(redisClient).save(existingCacheMap);
         assertThrows(KeyExistsException.class,()->cacheDao.save(existingCacheMap));
+    }
+    @Test
+    public void testUpdate_ApacheIgnite_Success() {
+        String key = "test456";
+        String value = "Test";
+        cacheDao.cacheClient = AppConstants.CACHE_APACHE_IGNITE;
+        cacheDao.update(new CacheMap(key, value,30L));
+        verify(apacheIgniteClient, times(1)).update(new CacheMap(key, value,30L));
+        verify(redisClient, never()).update(new CacheMap(key, value,30L));
+    }
+    @Test
+    public void testUpdate_ApacheIgnite_Failure(){
+        String key = "test456";
+        String value = "Test";
+        cacheDao.cacheClient = AppConstants.CACHE_APACHE_IGNITE;
+        doThrow(new UnableToAddKeyException("Unable to add key")).when(apacheIgniteClient).update(new CacheMap(key,value,30L));
+        assertThrows(UnableToAddKeyException.class,()->cacheDao.update(new CacheMap(key,value,30L)));
+    }
+    @Test
+    public void testUpdate_ApacheIgnite_KeyNotExistsException(){
+        String existingKey="Test123";
+        String updatedvalue="Test";
+        cacheDao.cacheClient = AppConstants.CACHE_APACHE_IGNITE;
+        doThrow(new KeyNotExistsException("key does not exist in cache")).when(apacheIgniteClient).update(new CacheMap(existingKey,updatedvalue,30l));
+        assertThrows(KeyNotExistsException.class,()->cacheDao.update(new CacheMap(existingKey,updatedvalue,30l)));
+    }
+
+    @Test
+    public void testUpdate_Redis_Success() {
+        String key = "test456";
+        String value = "Test";
+        cacheDao.cacheClient = AppConstants.CACHE_REDIS;
+        cacheDao.update(new CacheMap(key, value,30L));
+        verify(apacheIgniteClient, never()).update(new CacheMap(key, value,30L));
+        verify(redisClient, times(1)).update(new CacheMap(key, value,30L));
+    }
+    @Test
+    public void testUpdate_Redis_Failure(){
+        String key = "test456";
+        String value = "Test";
+        cacheDao.cacheClient = AppConstants.CACHE_REDIS;
+        doThrow(new UnableToAddKeyException("Unable to add key")).when(redisClient).update(new CacheMap(key,value,30L));
+        assertThrows(UnableToAddKeyException.class,()->cacheDao.update(new CacheMap(key,value,30L)));
+    }
+
+    @Test
+    public void testUpdate_Redis_KeyNotExistsException(){
+        String existingKey="Test123";
+        String updatedvalue="Test";
+        cacheDao.cacheClient = AppConstants.CACHE_REDIS;
+        doThrow(new KeyNotExistsException("key does not exist in cache")).when(redisClient).update(new CacheMap(existingKey,updatedvalue,30l));
+        assertThrows(KeyNotExistsException.class,()->cacheDao.update(new CacheMap(existingKey,updatedvalue,30l)));
     }
 
     @Test

@@ -6,6 +6,8 @@ import com.caching.cachingtest.dao.CacheDao;
 import com.caching.cachingtest.dao.RedisClient;
 import com.caching.cachingtest.exception.InvalidTTLException;
 import com.caching.cachingtest.exception.KeyExistsException;
+import com.caching.cachingtest.exception.KeyNotExistsException;
+import com.caching.cachingtest.exception.KeyNotExistsExceptionTest;
 import com.caching.cachingtest.model.CacheMap;
 import com.caching.cachingtest.model.Response;
 import com.caching.cachingtest.service.CacheServiceImpl;
@@ -158,5 +160,62 @@ public class CacheControllerTest {
         ResponseEntity<Response> actualResponse = cacheController.addKey(httpServletRequest,new CacheMap(existingKey, existingValue,-1l));
         assertEquals(errorMessage, actualResponse.getBody().getMessage());
         Assert.assertEquals(400,actualResponse.getStatusCodeValue());
+    }
+
+    @Test
+    public void updateKey_Success(){
+        CacheMap cacheMap = new CacheMap();
+        cacheMap.setKey("01");
+        cacheMap.setValue("data");
+        cacheMap.setTtl(10L);
+        Response expectedResponse = new Response(AppConstants.SUCCESS);
+        expectedResponse.setMessage("key " + cacheMap.getKey() + " updated");
+        doNothing().when(userServiceImpl).update(cacheMap);
+        ResponseEntity<Response> response = cacheController.updateKey(httpServletRequest,cacheMap);
+        assertEquals(expectedResponse.getStatus(), response.getBody().getStatus());
+        assertEquals(expectedResponse.getMessage(), response.getBody().getMessage());
+    }
+    @Test
+    public void testUpdateKey_Success_TtlNull()  {
+        CacheMap cacheMap = new CacheMap();
+        cacheMap.setKey("01");
+        cacheMap.setValue("data");
+        cacheMap.setTtl(null);
+        Response expectedResponse = new Response(AppConstants.SUCCESS);
+        expectedResponse.setMessage("key " + cacheMap.getKey() + " updated");
+        doNothing().when(userServiceImpl).update(cacheMap);
+        ResponseEntity<Response> response = cacheController.updateKey(httpServletRequest,cacheMap);
+        assertEquals(expectedResponse.getStatus(), response.getBody().getStatus());
+        assertEquals(expectedResponse.getMessage(), response.getBody().getMessage());
+    }
+    @Test
+    public void testUpdateKey_Failure_KeyNotExistsException(){
+        String key = "Test12";
+        String value = "existingValue";
+        String errorMessage = "key not exists in cache";
+        Mockito.doThrow(new KeyNotExistsException(errorMessage)).when(userServiceImpl).update(new CacheMap(key, value,30L));
+        ResponseEntity<Response> actualResponse = cacheController.updateKey(httpServletRequest,new CacheMap(key, value,30L));
+        assertEquals(errorMessage, actualResponse.getBody().getMessage());
+        Assert.assertEquals(400,actualResponse.getStatusCodeValue());
+    }
+    @Test
+    public void testUpdateKey_Failure_InvalidTTl(){
+        String existingKey = "Test12";
+        String existingValue = "existingValue";
+        String errorMessage = "key invalid ttl";
+        Mockito.doThrow(new InvalidTTLException(errorMessage)).when(userServiceImpl).update(new CacheMap(existingKey, existingValue,-1l));
+        ResponseEntity<Response> actualResponse = cacheController.updateKey(httpServletRequest,new CacheMap(existingKey, existingValue,-1l));
+        assertEquals(errorMessage, actualResponse.getBody().getMessage());
+        Assert.assertEquals(400,actualResponse.getStatusCodeValue());
+    }
+    @Test
+    public void testUpdateKey_Failure(){
+        String invalidKey = "-1";
+        String invalidValue = "invalidValue";
+        String errorMessage = "Unable to save key";
+        Mockito.doThrow(new RuntimeException(errorMessage)).when(userServiceImpl).update(new CacheMap(invalidKey, invalidValue,30L));
+        ResponseEntity<Response> actualResponse = cacheController.updateKey(httpServletRequest,new CacheMap(invalidKey, invalidValue,30L));
+        assertEquals("Error occurred : " + errorMessage, actualResponse.getBody().getMessage());
+        Assert.assertEquals(500,actualResponse.getStatusCodeValue());
     }
 }

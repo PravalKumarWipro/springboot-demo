@@ -118,6 +118,7 @@ public class ApacheIgniteClient implements GenericCacheClient {
             throw new KeyNotExistsException("key "+cacheMap.getKey()+" not exists, cannot continue!");
         }
         try {
+            clientCache.remove(cacheMap.getKey());
             clientCache.put(cacheMap.getKey(), cacheMap.getValue());
             LOGGER.info("In update() client ::: APACHE IGNITE  Rebalancing Mode ::: "+cacheRebalanceMode+"\t Cache Name ::"+cacheName+" updating the key : "+ cacheMap.getKey()+" success");
             LOGGER.debug("In update() client ::: APACHE IGNITE  Rebalancing Mode ::: "+cacheRebalanceMode+"\t Cache Name ::"+cacheName+" updating the key : "+ cacheMap.getKey()+" success, value ::"+cacheMap.getValue());

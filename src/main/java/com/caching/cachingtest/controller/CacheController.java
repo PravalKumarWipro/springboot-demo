@@ -6,6 +6,7 @@ import com.caching.cachingtest.dao.CacheDao;
 import com.caching.cachingtest.exception.InvalidTTLException;
 import com.caching.cachingtest.exception.KeyExistsException;
 import com.caching.cachingtest.exception.KeyNotExistsException;
+import com.caching.cachingtest.exception.MissingMandatoryParamException;
 import com.caching.cachingtest.model.CacheMap;
 import com.caching.cachingtest.model.Response;
 import com.caching.cachingtest.service.CacheServiceImpl;
@@ -107,6 +108,7 @@ public class CacheController {
     public ResponseEntity<Response> addKey(HttpServletRequest request, @RequestBody CacheMap cacheMap) {
         Response response = new Response(AppConstants.SUCCESS);
         try {
+            validatePayload(cacheMap);
             LOGGER.debug("In addKey() Key : {} added \t Req Path : {}, payload :: {}, remoteaddress :: {}",cacheMap.getKey(), request.getRequestURI(),(new ObjectMapper()).writeValueAsString(cacheMap),request.getRemoteAddr());
             LOGGER.info("In addKey() key : {} \t Req Path :{}", cacheMap.getKey(), request.getRequestURI());
             if (cacheMap.getTtl() == null) {
@@ -142,6 +144,7 @@ public class CacheController {
     public ResponseEntity<Response> updateKey(HttpServletRequest request, @RequestBody CacheMap cacheMap) {
         Response response = new Response(AppConstants.SUCCESS);
         try {
+            validatePayload(cacheMap);
             LOGGER.debug("In updateKey() Key : {} updated \t Req Path : {}, payload :: {}",cacheMap.getKey(), request.getRequestURI(),(new ObjectMapper()).writeValueAsString(cacheMap));
             LOGGER.info("In updateKey() key : {} \t Req Path :{}", cacheMap.getKey(), request.getRequestURI());
             if (cacheMap.getTtl() == null) {
@@ -169,6 +172,14 @@ public class CacheController {
             response.setStatus("Bad Request");
             response.setMessage("Error occurred : " + e.getMessage());
             return new ResponseEntity<Response>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public void validatePayload(CacheMap cacheMap){
+        if(cacheMap.getKey() == null || cacheMap.getKey().length() == 0){
+            throw new MissingMandatoryParamException("Missing mandatory property key");
+        }else if(cacheMap.getValue() == null || cacheMap.getValue().length() == 0){
+            throw new MissingMandatoryParamException("Missing mandatory property value");
         }
     }
 }

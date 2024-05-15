@@ -4,10 +4,7 @@ import com.caching.cachingtest.AppConstants;
 import com.caching.cachingtest.dao.ApacheIgniteClient;
 import com.caching.cachingtest.dao.CacheDao;
 import com.caching.cachingtest.dao.RedisClient;
-import com.caching.cachingtest.exception.InvalidTTLException;
-import com.caching.cachingtest.exception.KeyExistsException;
-import com.caching.cachingtest.exception.KeyNotExistsException;
-import com.caching.cachingtest.exception.KeyNotExistsExceptionTest;
+import com.caching.cachingtest.exception.*;
 import com.caching.cachingtest.model.CacheMap;
 import com.caching.cachingtest.model.Response;
 import com.caching.cachingtest.service.CacheServiceImpl;
@@ -218,4 +215,34 @@ public class CacheControllerTest {
         assertEquals("Error occurred : " + errorMessage, actualResponse.getBody().getMessage());
         Assert.assertEquals(500,actualResponse.getStatusCodeValue());
     }
+    @Test
+    public void testValidatePayload_key_null(){
+        CacheMap cacheMap = new CacheMap();
+        cacheMap.setKey(null);
+        cacheMap.setValue("test");
+        Assert.assertThrows(MissingMandatoryParamException.class,()->cacheController.validatePayload(cacheMap));
+    }
+    @Test
+    public void testValidatePayload_key_empty(){
+        CacheMap cacheMap = new CacheMap();
+        cacheMap.setKey("");
+        cacheMap.setValue("test");
+        Assert.assertThrows(MissingMandatoryParamException.class,()->cacheController.validatePayload(cacheMap));
+    }
+
+    @Test
+    public void testValidatePayload_Value_Null(){
+        CacheMap cacheMap = new CacheMap();
+        cacheMap.setKey("123");
+        cacheMap.setValue(null);
+        Assert.assertThrows(MissingMandatoryParamException.class,()->cacheController.validatePayload(cacheMap));
+    }
+    @Test
+    public void testValidatePayload_Value_Empty(){
+        CacheMap cacheMap = new CacheMap();
+        cacheMap.setKey("123");
+        cacheMap.setValue("");
+        Assert.assertThrows(MissingMandatoryParamException.class,()->cacheController.validatePayload(cacheMap));
+    }
+
 }

@@ -102,42 +102,40 @@ public class CacheController {
             return new ResponseEntity<Response>(response, HttpStatus.NOT_FOUND);
         }
     }
-
+    
     /* Endpoint to add or update a key in the cache */
     @PostMapping("/caching/")
-    public ResponseEntity<Response> addKey(HttpServletRequest request, @RequestBody CacheMap cacheMap) {
+    public ResponseEntity<Response> addKey(@RequestBody CacheMap cacheMap) {
         Response response = new Response(AppConstants.SUCCESS);
         try {
-            validatePayload(cacheMap);
-            LOGGER.debug("In addKey() Key : {} added \t Req Path : {}, payload :: {}, remoteaddress :: {}",cacheMap.getKey(), request.getRequestURI(),(new ObjectMapper()).writeValueAsString(cacheMap),request.getRemoteAddr());
-            LOGGER.info("In addKey() key : {} \t Req Path :{}", cacheMap.getKey(), request.getRequestURI());
+            LOGGER.info("In addKey() key : {} ", cacheMap.getKey());
             if (cacheMap.getTtl() == null) {
                 cacheMap.setTtl(Long.MAX_VALUE);
             }
-            userServiceImpl.save(cacheMap);
+            userServiceImpl.saveOrUpdate(cacheMap);
             response.setKey(cacheMap.getKey());
             response.setValue(cacheMap.getValue());
             response.setMessage("key " + cacheMap.getKey() + " added");
-            LOGGER.info("In addKey() Key : {} added \t Req Path : {}",cacheMap.getKey(), request.getRequestURI());
-            LOGGER.debug("In addKey() Key : {} added \t Req Path : {}, payload :: {}, response :: {}",cacheMap.getKey(), request.getRequestURI(),(new ObjectMapper()).writeValueAsString(cacheMap), response.getMessage());
+            LOGGER.info("In addKey() Key : {} added",cacheMap.getKey());
             return new ResponseEntity<Response>(response, HttpStatus.CREATED);
         }catch (KeyExistsException keyExistsException){
-            LOGGER.error("In addKey() key : {} already existing in cache\t exception : {}\t stacktrace :{} \t Req Path :: {}",cacheMap.getKey(),keyExistsException.getMessage(),Arrays.toString(keyExistsException.getStackTrace()), request.getRequestURI());
+            LOGGER.error("In addKey() key : {} already existing in cache\t exception : {}\t stacktrace : ",cacheMap.getKey(),keyExistsException.getMessage(),Arrays.toString(keyExistsException.getStackTrace()));
             response.setStatus("Bad Request");
             response.setMessage(keyExistsException.getMessage());
             return new ResponseEntity<Response>(response, HttpStatus.BAD_REQUEST);
         }catch (InvalidTTLException invalidTTLException){
-            LOGGER.error("In addKey() key : {} invalid ttl\t exception : {}\t stacktrace : {} \t Req Path :: {}",cacheMap.getKey(),invalidTTLException.getMessage(),Arrays.toString(invalidTTLException.getStackTrace()), request.getRequestURI());
+            LOGGER.error("In addKey() key : {} invalid ttl\t exception : {}\t stacktrace : ",cacheMap.getKey(),invalidTTLException.getMessage(),Arrays.toString(invalidTTLException.getStackTrace()));
             response.setStatus("Bad Request");
             response.setMessage(invalidTTLException.getMessage());
             return new ResponseEntity<Response>(response, HttpStatus.BAD_REQUEST);
         }catch (Exception e) {
-            LOGGER.error("In addKey() key : {} exception : {}\t stacktrace : {} \t Req Path :: {}",cacheMap.getKey(),e.getMessage(),Arrays.toString(e.getStackTrace()), request.getRequestURI());
+            LOGGER.error("In addKey() key : {} exception : {}\t stacktrace : ",cacheMap.getKey(),e.getMessage(),Arrays.toString(e.getStackTrace()));
             response.setStatus("Bad Request");
             response.setMessage("Error occurred : " + e.getMessage());
             return new ResponseEntity<Response>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+}
 
     /* Endpoint to update a key in the cache */
     @PutMapping("/caching/")
